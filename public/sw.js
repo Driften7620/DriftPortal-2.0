@@ -1,4 +1,4 @@
-const CACHE = 'driftportal-2-sprint2-dashboard';
+const CACHE = 'driftportal-2-sprint3-maalerlog';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {

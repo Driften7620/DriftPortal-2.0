@@ -13,7 +13,7 @@ Statusforklaring:
 | Login og brugere | Reference fundet | Roller, adgangsstyring, brugerprofiler, skift bruger |
 | Dashboard | Sprint 2 i gang | Store modulkort, status, alarmer, hurtig navigation, dagens opgaver |
 | Infoskærm | Reference fundet | TV-visning, driftsstatus, MålerLog, Lager, Rundering, Facility, Udstyr |
-| MålerLog | Reference fundet | Aflæsning, QR, kamera, historik, forbrug, alarmer, eksport |
+| MålerLog | Sprint 3 i gang | Aflæsning, QR, kamera, historik, forbrug, alarmer, eksport |
 | Rundering | Reference fundet | Grupper, lokationer, aktiviteter, målepunkter, QR/NFC, undtagelser |
 | Facility Service | Reference fundet | Jobs, tildeling, opgaver, checklister, vedhæftninger |
 | Mine Opgaver | Reference fundet | Personlige opgaver, status og jobflow |

@@ -6,6 +6,7 @@ import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { driftModules } from '../data/modules';
 import { canAccessModule } from '../features/auth/roleAccess';
+import { MaalerLogPage } from '../modules/maalerlog/MaalerLogPage';
 
 export function ModulePage() {
   const { moduleId } = useParams();
@@ -14,6 +15,8 @@ export function ModulePage() {
 
   if (!module) return <Navigate to="/" replace />;
   if (!canAccessModule(user, module.id)) return <Navigate to="/" replace />;
+
+  if (module.id === 'maalerlog') return <MaalerLogPage />;
 
   const Icon = module.icon;
 

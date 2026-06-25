@@ -53,10 +53,43 @@ create table public.sync_queue (
   synced_at timestamptz
 );
 
+create table public.meters (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  location text not null,
+  group_name text not null default 'Drift',
+  unit text not null,
+  interval_hours integer not null default 24,
+  min_value numeric,
+  max_value numeric,
+  average_consumption numeric not null default 0,
+  status text not null default 'ok',
+  qr_code text unique,
+  note text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.meter_readings (
+  id uuid primary key default gen_random_uuid(),
+  meter_id uuid not null references public.meters(id) on delete cascade,
+  value numeric not null,
+  consumption numeric,
+  read_at timestamptz not null default now(),
+  read_by uuid references public.profiles(id) on delete set null,
+  comment text,
+  is_out_of_range boolean not null default false,
+  is_unusual boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.activity_log enable row level security;
 alter table public.favorites enable row level security;
 alter table public.sync_queue enable row level security;
+alter table public.meters enable row level security;
+alter table public.meter_readings enable row level security;
 
 create policy "Profiles are visible to authenticated users"
   on public.profiles for select
@@ -90,6 +123,21 @@ create policy "Users manage own sync queue"
   to authenticated
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+create policy "Meters visible to authenticated users"
+  on public.meters for select
+  to authenticated
+  using (true);
+
+create policy "Meter readings visible to authenticated users"
+  on public.meter_readings for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can create readings"
+  on public.meter_readings for insert
+  to authenticated
+  with check (auth.uid() = read_by);
 
 create or replace function public.handle_new_user()
 returns trigger

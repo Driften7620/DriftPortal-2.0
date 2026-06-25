@@ -36,9 +36,9 @@ export const driftModules: DriftModule[] = [
     description: 'Aflæs målere, forbrug og grænsealarmer',
     accent: '#00e5ff',
     icon: BoltIcon,
-    status: 'critical',
-    badge: '39 afventer',
-    sprint: 'Sprint 2',
+    status: 'warning',
+    badge: '3 afventer',
+    sprint: 'Sprint 3',
     legacyCoverage: ['måleraflæsninger', 'QR', 'kamera', 'alarm-mails', 'historik'],
   },
   {

@@ -24,8 +24,8 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 
 1. Sprint 0 - fundament: Vite, React, TypeScript, MUI, router, PWA, CI, modulskal. Status: færdig.
 2. Sprint 1 - login, roller, navigation, Supabase schema og app-shell. Status: færdig som fundament.
-3. Sprint 2 - Dashboard og første driftsoversigt. Status: i gang.
-4. Sprint 3 - MålerLog.
+3. Sprint 2 - Dashboard og første driftsoversigt. Status: færdig som mock-data dashboard.
+4. Sprint 3 - MålerLog. Status: i gang.
 5. Sprint 4 - Rundering som PlantLog-inspireret modul.
 6. Sprint 5 - Facility Service og Mine opgaver.
 7. Sprint 6 - Lagerstyring og SDS.
@@ -42,6 +42,16 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Dagens opgaver med frister og modullinks.
 - Sprintstatus og prioriterede modulkort.
 - Mock-data samlet i `src/data/dashboard.ts`, så de senere kan skiftes ud med Supabase-data.
+
+## Sprint 3 leverance
+
+- MålerLog som første rigtige modulside.
+- Målerliste med lokationsfilter, status og seneste aflæsning.
+- Registrer ny aflæsning med beregnet forbrug.
+- Advarsel hvis ny aflæsning er lavere end seneste, uden for grænseværdi eller mere end 10x normalt forbrug.
+- Historik pr. måler.
+- QR- og kamera-knapper forberedt til næste integration.
+- Supabase-tabeller for `meters` og `meter_readings` tilføjet i `supabase/schema.sql`.
 
 ## Nye moduler fra brief
 
