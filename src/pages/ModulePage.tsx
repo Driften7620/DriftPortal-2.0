@@ -1,7 +1,8 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import { Box, Button, Card, Chip, Divider, Stack, Typography } from '@mui/material';
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 import { driftModules } from '../data/modules';
@@ -10,6 +11,7 @@ import { MaalerLogPage } from '../modules/maalerlog/MaalerLogPage';
 
 export function ModulePage() {
   const { moduleId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const module = driftModules.find((item) => item.id === moduleId);
 
@@ -22,6 +24,12 @@ export function ModulePage() {
 
   return (
     <Stack spacing={3}>
+      <Box>
+        <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
+          Tilbage til oversigt
+        </Button>
+      </Box>
+
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }}>
         <Box
           sx={{

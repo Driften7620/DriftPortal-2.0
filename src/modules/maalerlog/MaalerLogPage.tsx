@@ -1,4 +1,5 @@
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import HistoryIcon from '@mui/icons-material/History';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
@@ -19,6 +20,7 @@ import {
   Typography,
 } from '@mui/material';
 import { FormEvent, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../contexts/AuthContext';
 import { meters as initialMeters, readings as initialReadings } from './mockData';
@@ -28,6 +30,7 @@ import type { Meter, MeterReading } from './types';
 const allLocations = 'Alle lokationer';
 
 export function MaalerLogPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [readings, setReadings] = useState<MeterReading[]>(initialReadings);
   const [selectedMeterId, setSelectedMeterId] = useState(initialMeters[0]?.id ?? '');
@@ -73,6 +76,12 @@ export function MaalerLogPage() {
 
   return (
     <Stack spacing={3}>
+      <Box>
+        <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
+          Tilbage til oversigt
+        </Button>
+      </Box>
+
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ md: 'center' }}>
         <Box sx={{ flex: 1 }}>
           <Typography variant="h3" sx={{ color: '#00e5ff', fontWeight: 900 }}>
