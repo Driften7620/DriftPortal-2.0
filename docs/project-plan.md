@@ -23,16 +23,25 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 ## Sprintplan
 
 1. Sprint 0 - fundament: Vite, React, TypeScript, MUI, router, PWA, CI, modulskal. Status: færdig.
-2. Sprint 1 - login, roller, navigation, Supabase schema og app-shell. Status: i gang.
-3. Sprint 2 - Dashboard og MålerLog.
-4. Sprint 3 - Rundering som PlantLog-inspireret modul.
-5. Sprint 4 - Facility Service og Mine opgaver.
-6. Sprint 5 - Lagerstyring og SDS.
-7. Sprint 6 - HR og Tid.
-8. Sprint 7 - How To Do og LiveConnect.
-9. Sprint 8 - Udstyr og El-eftersyn.
-10. Sprint 9 - Køretøjer og Anlæg.
-11. Sprint 10 - global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
+2. Sprint 1 - login, roller, navigation, Supabase schema og app-shell. Status: færdig som fundament.
+3. Sprint 2 - Dashboard og første driftsoversigt. Status: i gang.
+4. Sprint 3 - MålerLog.
+5. Sprint 4 - Rundering som PlantLog-inspireret modul.
+6. Sprint 5 - Facility Service og Mine opgaver.
+7. Sprint 6 - Lagerstyring og SDS.
+8. Sprint 7 - HR og Tid.
+9. Sprint 8 - How To Do og LiveConnect.
+10. Sprint 9 - Udstyr og El-eftersyn.
+11. Sprint 10 - Køretøjer, Anlæg, global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
+
+## Sprint 2 leverance
+
+- Dashboard med driftshero, online-status og hurtig handling til QR/søgning.
+- Nøgletal for manglende måleraflæsninger, runderinger, lave lagervarer og HR-ansøgninger.
+- Prioriterede hændelser med direkte link til relevante moduler.
+- Dagens opgaver med frister og modullinks.
+- Sprintstatus og prioriterede modulkort.
+- Mock-data samlet i `src/data/dashboard.ts`, så de senere kan skiftes ud med Supabase-data.
 
 ## Nye moduler fra brief
 
