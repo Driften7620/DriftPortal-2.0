@@ -26,3 +26,17 @@ pnpm dev
 pnpm lint
 pnpm build
 ```
+
+## Miljoevariabler
+
+Kopier `.env.example` til `.env.local` og indsæt Supabase URL + anon key.
+
+## Sprint 1
+
+Sprint 1 introducerer:
+
+- Supabase-klient
+- login-side med demo-admin
+- rollemodel og moduladgang
+- beskyttede ruter
+- database-startskema i `supabase/schema.sql`
