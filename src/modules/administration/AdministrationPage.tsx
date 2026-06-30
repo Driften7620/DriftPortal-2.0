@@ -101,8 +101,10 @@ export function AdministrationPage() {
           {tab === 1 && (
             <UserManagement
               users={admin.users}
+              currentUserId={admin.currentUserId}
               onSave={admin.saveUser}
               onToggleActive={admin.toggleUserActive}
+              onDelete={admin.deleteUser}
             />
           )}
           {tab === 2 && (
@@ -112,6 +114,7 @@ export function AdministrationPage() {
               onAddLocation={admin.addLocation}
               onAddCategory={admin.addCategory}
               onToggleLocation={admin.toggleLocation}
+              onDeleteLocation={admin.deleteLocation}
               onToggleCategory={admin.toggleCategory}
             />
           )}
