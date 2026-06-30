@@ -58,8 +58,9 @@ export const driftModules: DriftModule[] = [
     description: 'Opgaver, vedligehold og materialeforbrug',
     accent: '#fb923c',
     icon: BuildIcon,
-    status: 'ok',
-    sprint: 'Sprint 4',
+    status: 'warning',
+    badge: '3 åbne',
+    sprint: 'Sprint 5',
     legacyCoverage: ['jobs', 'tildeling', 'checklister', 'filer', 'mine opgaver'],
   },
   {
@@ -68,8 +69,9 @@ export const driftModules: DriftModule[] = [
     description: 'Tildelte opgaver og egne deadlines',
     accent: '#60a5fa',
     icon: TaskAltIcon,
-    status: 'ok',
-    sprint: 'Sprint 4',
+    status: 'warning',
+    badge: '2 tildelt',
+    sprint: 'Sprint 5',
     legacyCoverage: ['åbne opgaver', 'status', 'kommentarer', 'jobflow'],
   },
   {

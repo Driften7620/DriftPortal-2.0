@@ -120,6 +120,25 @@ create table public.round_checks (
   created_at timestamptz not null default now()
 );
 
+create table public.facility_work_orders (
+  id text primary key,
+  title text not null,
+  description text not null default '',
+  location text not null,
+  category text not null default 'Andet',
+  priority text not null default 'normal',
+  status text not null default 'new',
+  assigned_to text not null,
+  due_at timestamptz not null,
+  created_by uuid references public.profiles(id) on delete set null,
+  checklist jsonb not null default '[]',
+  comments jsonb not null default '[]',
+  materials jsonb not null default '[]',
+  attachment_count integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.activity_log enable row level security;
 alter table public.favorites enable row level security;
@@ -129,6 +148,7 @@ alter table public.meter_readings enable row level security;
 alter table public.round_points enable row level security;
 alter table public.round_sessions enable row level security;
 alter table public.round_checks enable row level security;
+alter table public.facility_work_orders enable row level security;
 
 create policy "Profiles are visible to authenticated users"
   on public.profiles for select
@@ -230,6 +250,22 @@ create policy "Authenticated users can create round checks"
   on public.round_checks for insert
   to authenticated
   with check (auth.uid() = checked_by);
+
+create policy "Facility work orders visible to authenticated users"
+  on public.facility_work_orders for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can create facility work orders"
+  on public.facility_work_orders for insert
+  to authenticated
+  with check (auth.uid() = created_by);
+
+create policy "Authenticated users can update facility work orders"
+  on public.facility_work_orders for update
+  to authenticated
+  using (true)
+  with check (true);
 
 create or replace function public.handle_new_user()
 returns trigger

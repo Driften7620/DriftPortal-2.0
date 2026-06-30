@@ -15,8 +15,8 @@ Statusforklaring:
 | Infoskærm | Reference fundet | TV-visning, driftsstatus, MålerLog, Lager, Rundering, Facility, Udstyr |
 | MålerLog | Sprint 3.1 i gang | Aflæsning, lokal gem, synk-status, Supabase-synk, QR, kamera, historik, forbrug, alarmer, eksport |
 | Rundering | Sprint 4 i gang | Runder, lokationer, kontrolpunkter, OK/afvigelse/spring over, lokal gem, QR/NFC, undtagelser |
-| Facility Service | Reference fundet | Jobs, tildeling, opgaver, checklister, vedhæftninger |
-| Mine Opgaver | Reference fundet | Personlige opgaver, status og jobflow |
+| Facility Service | Sprint 5 færdig som grundlag | Jobs, tildeling, opgaver, checklister, kommentarer, materialer, offline og synk |
+| Mine Opgaver | Sprint 5 færdig som grundlag | Personlige opgaver, start/pause/afslut, checklister, kommentarer og materialer |
 | Lagerstyring | Reference fundet | Beholdning, min/max, lagerlog, QR, indkøbsliste, lokationer |
 | SDS | Reference fundet | Sikkerhedsdatablade, PDF, billeder, fareinfo, nødtelefon |
 | HR bruger | Reference fundet | Arbejdstid, ferie/fri, saldo, kalender, ansøgninger |

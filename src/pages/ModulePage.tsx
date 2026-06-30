@@ -7,6 +7,8 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { driftModules } from '../data/modules';
 import { canAccessModule } from '../features/auth/roleAccess';
+import { FacilityServicePage } from '../modules/facility/FacilityServicePage';
+import { MineOpgaverPage } from '../modules/facility/MineOpgaverPage';
 import { MaalerLogPage } from '../modules/maalerlog/MaalerLogPage';
 import { RunderingPage } from '../modules/rundering/RunderingPage';
 
@@ -21,6 +23,8 @@ export function ModulePage() {
 
   if (module.id === 'maalerlog') return <MaalerLogPage />;
   if (module.id === 'rundering') return <RunderingPage />;
+  if (module.id === 'facility-service') return <FacilityServicePage />;
+  if (module.id === 'mine-opgaver') return <MineOpgaverPage />;
 
   const Icon = module.icon;
 

@@ -25,9 +25,9 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 1. Sprint 0 - fundament: Vite, React, TypeScript, MUI, router, PWA, CI, modulskal. Status: færdig.
 2. Sprint 1 - login, roller, navigation, Supabase schema og app-shell. Status: færdig som fundament.
 3. Sprint 2 - Dashboard og første driftsoversigt. Status: færdig som mock-data dashboard.
-4. Sprint 3 - MålerLog. Status: i gang.
-5. Sprint 4 - Rundering som PlantLog-inspireret modul. Status: i gang.
-6. Sprint 5 - Facility Service og Mine opgaver.
+4. Sprint 3 - MålerLog. Status: færdig som offline/synk-grundlag.
+5. Sprint 4 - Rundering som PlantLog-inspireret modul. Status: færdig som offline/synk-grundlag.
+6. Sprint 5 - Facility Service og Mine opgaver. Status: færdig som offline/synk-grundlag.
 7. Sprint 6 - Lagerstyring og SDS.
 8. Sprint 7 - HR og Tid.
 9. Sprint 8 - How To Do og LiveConnect.
@@ -64,6 +64,16 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Seneste registreringer vises pr. runde.
 - QR-knap forberedt til punkt-scanning.
 - Supabase-tabeller for `round_points`, `round_sessions` og `round_checks` tilføjet i `supabase/schema.sql`.
+
+## Sprint 5 leverance
+
+- Facility Service med samlet jobliste, søgning, statusfilter og nøgletal.
+- Opret opgaver med lokation, kategori, prioritet, ansvarlig og frist.
+- Checklister, kommentarer, bilagstæller og materialeforbrug på hvert job.
+- Mine Opgaver med personligt filter og hurtige handlinger til start, pause og afslut.
+- Facility Service og Mine Opgaver deler samme lokale data og virker offline.
+- Synk-status og rigtig Supabase-upsert, når login og miljøvariabler er konfigureret.
+- Supabase-tabellen `facility_work_orders` med RLS-politikker.
 
 ## Nye moduler fra brief
 
