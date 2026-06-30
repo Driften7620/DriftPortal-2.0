@@ -1,4 +1,4 @@
-const CACHE = 'driftportal-2-sprint4-rundering';
+const CACHE = 'driftportal-2-pages-routing-fix';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {

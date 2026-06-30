@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DriftPortal 2.0</title>
+    <script>
+      var repositoryBase = '/DriftPortal-2.0/';
+      var requestedPath = window.location.pathname.slice(repositoryBase.length);
+      var destination = repositoryBase + '#/' + requestedPath + window.location.search;
+      window.location.replace(destination);
+    </script>
+  </head>
+  <body></body>
+</html>

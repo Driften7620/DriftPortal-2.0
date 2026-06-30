@@ -1,5 +1,5 @@
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { AuthProvider } from '../contexts/AuthContext';
 import { ProtectedRoute } from '../features/auth/ProtectedRoute';
@@ -18,7 +18,7 @@ export function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <HashRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route element={<ProtectedRoute />}>
@@ -29,7 +29,7 @@ export function App() {
               </Route>
             </Route>
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </AuthProvider>
     </ThemeProvider>
   );
