@@ -430,6 +430,11 @@ create policy "Admins can update system locations"
   using (public.is_portal_admin())
   with check (public.is_portal_admin());
 
+create policy "Admins can delete system locations"
+  on public.system_locations for delete
+  to authenticated
+  using (public.is_portal_admin());
+
 create policy "System categories visible to authenticated users"
   on public.system_categories for select
   to authenticated
@@ -445,6 +450,11 @@ create policy "Admins can update system categories"
   to authenticated
   using (public.is_portal_admin())
   with check (public.is_portal_admin());
+
+create policy "Admins can delete system categories"
+  on public.system_categories for delete
+  to authenticated
+  using (public.is_portal_admin());
 
 create policy "Portal settings visible to authenticated users"
   on public.portal_settings for select
