@@ -84,12 +84,51 @@ create table public.meter_readings (
   created_at timestamptz not null default now()
 );
 
+create table public.round_points (
+  id text primary key,
+  title text not null,
+  location text not null,
+  group_name text not null default 'Drift',
+  instruction text not null,
+  qr_code text unique,
+  required boolean not null default true,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.round_sessions (
+  id text primary key,
+  title text not null,
+  area text not null,
+  due_at timestamptz not null,
+  assigned_to text not null,
+  status text not null default 'planned',
+  point_ids text[] not null default '{}',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.round_checks (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null references public.round_sessions(id) on delete cascade,
+  point_id text not null references public.round_points(id) on delete cascade,
+  status text not null,
+  checked_at timestamptz not null default now(),
+  checked_by uuid references public.profiles(id) on delete set null,
+  note text,
+  created_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.activity_log enable row level security;
 alter table public.favorites enable row level security;
 alter table public.sync_queue enable row level security;
 alter table public.meters enable row level security;
 alter table public.meter_readings enable row level security;
+alter table public.round_points enable row level security;
+alter table public.round_sessions enable row level security;
+alter table public.round_checks enable row level security;
 
 create policy "Profiles are visible to authenticated users"
   on public.profiles for select
@@ -149,6 +188,48 @@ create policy "Authenticated users can create readings"
   on public.meter_readings for insert
   to authenticated
   with check (auth.uid() = read_by);
+
+create policy "Round points visible to authenticated users"
+  on public.round_points for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can upsert round points"
+  on public.round_points for insert
+  to authenticated
+  with check (true);
+
+create policy "Authenticated users can update round points"
+  on public.round_points for update
+  to authenticated
+  using (true)
+  with check (true);
+
+create policy "Round sessions visible to authenticated users"
+  on public.round_sessions for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can upsert round sessions"
+  on public.round_sessions for insert
+  to authenticated
+  with check (true);
+
+create policy "Authenticated users can update round sessions"
+  on public.round_sessions for update
+  to authenticated
+  using (true)
+  with check (true);
+
+create policy "Round checks visible to authenticated users"
+  on public.round_checks for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can create round checks"
+  on public.round_checks for insert
+  to authenticated
+  with check (auth.uid() = checked_by);
 
 create or replace function public.handle_new_user()
 returns trigger

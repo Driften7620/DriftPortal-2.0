@@ -26,7 +26,7 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 2. Sprint 1 - login, roller, navigation, Supabase schema og app-shell. Status: færdig som fundament.
 3. Sprint 2 - Dashboard og første driftsoversigt. Status: færdig som mock-data dashboard.
 4. Sprint 3 - MålerLog. Status: i gang.
-5. Sprint 4 - Rundering som PlantLog-inspireret modul.
+5. Sprint 4 - Rundering som PlantLog-inspireret modul. Status: i gang.
 6. Sprint 5 - Facility Service og Mine opgaver.
 7. Sprint 6 - Lagerstyring og SDS.
 8. Sprint 7 - HR og Tid.
@@ -55,6 +55,15 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Historik pr. måler.
 - QR- og kamera-knapper forberedt til næste integration.
 - Supabase-tabeller for `meters` og `meter_readings` tilføjet i `supabase/schema.sql`.
+
+## Sprint 4 leverance
+
+- Rundering som rigtig modulside med runder, områder og kontrolpunkter.
+- Store mobilvenlige handlinger til OK, afvigelse og spring over.
+- Lokale registreringer gemmes på enheden og får synk-status.
+- Seneste registreringer vises pr. runde.
+- QR-knap forberedt til punkt-scanning.
+- Supabase-tabeller for `round_points`, `round_sessions` og `round_checks` tilføjet i `supabase/schema.sql`.
 
 ## Nye moduler fra brief
 

@@ -14,7 +14,7 @@ Statusforklaring:
 | Dashboard | Sprint 2 i gang | Store modulkort, status, alarmer, hurtig navigation, dagens opgaver |
 | Infoskærm | Reference fundet | TV-visning, driftsstatus, MålerLog, Lager, Rundering, Facility, Udstyr |
 | MålerLog | Sprint 3.1 i gang | Aflæsning, lokal gem, synk-status, Supabase-synk, QR, kamera, historik, forbrug, alarmer, eksport |
-| Rundering | Reference fundet | Grupper, lokationer, aktiviteter, målepunkter, QR/NFC, undtagelser |
+| Rundering | Sprint 4 i gang | Runder, lokationer, kontrolpunkter, OK/afvigelse/spring over, lokal gem, QR/NFC, undtagelser |
 | Facility Service | Reference fundet | Jobs, tildeling, opgaver, checklister, vedhæftninger |
 | Mine Opgaver | Reference fundet | Personlige opgaver, status og jobflow |
 | Lagerstyring | Reference fundet | Beholdning, min/max, lagerlog, QR, indkøbsliste, lokationer |

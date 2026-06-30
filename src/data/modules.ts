@@ -48,9 +48,9 @@ export const driftModules: DriftModule[] = [
     accent: '#a78bfa',
     icon: SearchIcon,
     status: 'warning',
-    badge: '5 ikke runderet',
-    sprint: 'Sprint 3',
-    legacyCoverage: ['grupper', 'lokationer', 'aktiviteter', 'QR/NFC', 'undtagelser'],
+    badge: '2 runder aktive',
+    sprint: 'Sprint 4',
+    legacyCoverage: ['grupper', 'lokationer', 'aktiviteter', 'QR/NFC', 'undtagelser', 'lokal gem'],
   },
   {
     id: 'facility-service',
