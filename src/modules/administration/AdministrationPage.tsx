@@ -113,9 +113,11 @@ export function AdministrationPage() {
               categories={admin.categories}
               onAddLocation={admin.addLocation}
               onAddCategory={admin.addCategory}
+              onUpdateCategory={admin.updateCategory}
               onToggleLocation={admin.toggleLocation}
               onDeleteLocation={admin.deleteLocation}
               onToggleCategory={admin.toggleCategory}
+              onDeleteCategory={admin.deleteCategory}
             />
           )}
           {tab === 3 && (
