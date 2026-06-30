@@ -24,7 +24,7 @@ import type {
 } from './types';
 
 export function useAdministration() {
-  const { isDemoMode } = useAuth();
+  const { isDemoMode, user: currentUser } = useAuth();
   const [users, setUsers] = useState<ManagedUser[]>(() => loadAdminUsers() ?? adminUserSeed);
   const [locations, setLocations] = useState<SystemLocation[]>(
     () => loadLocations() ?? locationSeed,
@@ -90,6 +90,36 @@ export function useAdministration() {
     setSyncMessage('Brugerstatus er gemt offline.');
   }
 
+  async function deleteUser(id: string) {
+    const target = users.find((user) => user.id === id);
+    if (!target) return false;
+    if (currentUser?.id === id) {
+      setSyncMessage('Du kan ikke slette den bruger, du selv er logget ind som.');
+      return false;
+    }
+    if (id.startsWith('local-user-')) {
+      setUsers((current) => current.filter((user) => user.id !== id));
+      setSyncMessage('Den lokale bruger er slettet.');
+      return true;
+    }
+    if (isDemoMode || !supabase) {
+      setSyncMessage('En synkroniseret bruger kan kun slettes med rigtig Supabase-login.');
+      return false;
+    }
+
+    const { error } = await supabase.functions.invoke('delete-user', {
+      body: { userId: id },
+    });
+    if (error) {
+      setSyncMessage(`Brugeren kunne ikke slettes: ${error.message}`);
+      return false;
+    }
+
+    setUsers((current) => current.filter((user) => user.id !== id));
+    setSyncMessage(`${target.fullName} er slettet fra DriftPortal og Supabase-login.`);
+    return true;
+  }
+
   function addLocation(draft: LocationDraft) {
     const location: SystemLocation = {
       id: `location-${Date.now()}`,
@@ -131,6 +161,38 @@ export function useAdministration() {
           : location,
       ),
     );
+  }
+
+  async function deleteLocation(id: string) {
+    const target = locations.find((location) => location.id === id);
+    if (!target) return false;
+    if (target.syncStatus !== 'synced') {
+      setLocations((current) => current.filter((location) => location.id !== id));
+      setSyncMessage('Den lokale lokation er slettet.');
+      return true;
+    }
+    if (isDemoMode || !supabase) {
+      setSyncMessage('En synkroniseret lokation kan kun slettes med rigtig Supabase-login.');
+      return false;
+    }
+
+    const { error } = await supabase.from('system_locations').delete().eq('id', id);
+    if (error) {
+      setSyncMessage(`Lokationen kunne ikke slettes: ${error.message}`);
+      return false;
+    }
+
+    setLocations((current) => current.filter((location) => location.id !== id));
+    if (settings.defaultLocationId === id) {
+      setSettings((current) => ({
+        ...current,
+        defaultLocationId: '',
+        updatedAt: new Date().toISOString(),
+        syncStatus: 'pending',
+      }));
+    }
+    setSyncMessage(`${target.name} er slettet.`);
+    return true;
   }
 
   function toggleCategory(id: string) {
@@ -303,11 +365,14 @@ export function useAdministration() {
     settings,
     pendingCount,
     syncMessage,
+    currentUserId: currentUser?.id,
     saveUser,
     toggleUserActive,
+    deleteUser,
     addLocation,
     addCategory,
     toggleLocation,
+    deleteLocation,
     toggleCategory,
     updateSettings,
     syncPending,
