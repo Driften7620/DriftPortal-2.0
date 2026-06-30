@@ -54,7 +54,7 @@ create table public.sync_queue (
 );
 
 create table public.meters (
-  id uuid primary key default gen_random_uuid(),
+  id text primary key,
   name text not null,
   location text not null,
   group_name text not null default 'Drift',
@@ -73,7 +73,7 @@ create table public.meters (
 
 create table public.meter_readings (
   id uuid primary key default gen_random_uuid(),
-  meter_id uuid not null references public.meters(id) on delete cascade,
+  meter_id text not null references public.meters(id) on delete cascade,
   value numeric not null,
   consumption numeric,
   read_at timestamptz not null default now(),
@@ -128,6 +128,17 @@ create policy "Meters visible to authenticated users"
   on public.meters for select
   to authenticated
   using (true);
+
+create policy "Authenticated users can upsert meters"
+  on public.meters for insert
+  to authenticated
+  with check (true);
+
+create policy "Authenticated users can update meters"
+  on public.meters for update
+  to authenticated
+  using (true)
+  with check (true);
 
 create policy "Meter readings visible to authenticated users"
   on public.meter_readings for select

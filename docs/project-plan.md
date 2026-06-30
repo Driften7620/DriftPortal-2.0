@@ -48,6 +48,9 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - MålerLog som første rigtige modulside.
 - Målerliste med lokationsfilter, status og seneste aflæsning.
 - Registrer ny aflæsning med beregnet forbrug.
+- Aflæsninger gemmes lokalt med det samme, så modulet kan bruges offline.
+- Synk-status pr. aflæsning: afventer, synket eller fejlet.
+- Synk-knap forberedt til Supabase, når rigtig login og miljøvariabler er sat op.
 - Advarsel hvis ny aflæsning er lavere end seneste, uden for grænseværdi eller mere end 10x normalt forbrug.
 - Historik pr. måler.
 - QR- og kamera-knapper forberedt til næste integration.

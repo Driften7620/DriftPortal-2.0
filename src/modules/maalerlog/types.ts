@@ -22,6 +22,10 @@ export interface MeterReading {
   readAt: string;
   readBy: string;
   comment?: string;
+  consumption?: number;
+  syncStatus?: 'local' | 'pending' | 'synced' | 'failed';
+  syncError?: string;
+  syncedAt?: string;
 }
 
 export interface ReadingAssessment {

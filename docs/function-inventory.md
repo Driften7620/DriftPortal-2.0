@@ -13,7 +13,7 @@ Statusforklaring:
 | Login og brugere | Reference fundet | Roller, adgangsstyring, brugerprofiler, skift bruger |
 | Dashboard | Sprint 2 i gang | Store modulkort, status, alarmer, hurtig navigation, dagens opgaver |
 | Infoskærm | Reference fundet | TV-visning, driftsstatus, MålerLog, Lager, Rundering, Facility, Udstyr |
-| MålerLog | Sprint 3 i gang | Aflæsning, QR, kamera, historik, forbrug, alarmer, eksport |
+| MålerLog | Sprint 3.1 i gang | Aflæsning, lokal gem, synk-status, Supabase-synk, QR, kamera, historik, forbrug, alarmer, eksport |
 | Rundering | Reference fundet | Grupper, lokationer, aktiviteter, målepunkter, QR/NFC, undtagelser |
 | Facility Service | Reference fundet | Jobs, tildeling, opgaver, checklister, vedhæftninger |
 | Mine Opgaver | Reference fundet | Personlige opgaver, status og jobflow |
@@ -30,7 +30,7 @@ Statusforklaring:
 | Administration | Reference fundet | Moduladgang, backup, QR-print, nulstilling og systemindstillinger |
 | Global søgning | Skal bygges | Søg på tværs af målere, udstyr, SDS, jobs og manualer |
 | Push-notifikationer | Skal bygges | Opgaver, alarmer, godkendelser og reminders |
-| Synkronisering | Skal bygges | Offline kø og konflikt-håndtering mod Supabase |
+| Synkronisering | Sprint 3.1 i gang | MålerLog gemmer lokalt først og kan synke afventende aflæsninger mod Supabase |
 | Køretøjer | Skal bygges | Service, syn, dæk, brændstof og kilometer |
 | Anlæg | Skal bygges | Pumper, motorer, ventiler, vekslere, kedler, billeder og historik |
 | Vedligeholdelsesplan | Skal bygges | Gentagne serviceopgaver og intervaller |
