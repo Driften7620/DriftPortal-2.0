@@ -1,4 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
 import {
@@ -34,16 +35,26 @@ import type { ManagedUser, UserDraft } from './types';
 
 interface UserManagementProps {
   users: ManagedUser[];
+  currentUserId?: string;
   onSave: (draft: UserDraft) => void;
   onToggleActive: (id: string) => void;
+  onDelete: (id: string) => Promise<boolean>;
 }
 
 const roles = Object.keys(roleLabels) as UserRole[];
 
-export function UserManagement({ users, onSave, onToggleActive }: UserManagementProps) {
+export function UserManagement({
+  users,
+  currentUserId,
+  onSave,
+  onToggleActive,
+  onDelete,
+}: UserManagementProps) {
   const [search, setSearch] = useState('');
   const [role, setRole] = useState('Alle');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteCandidate, setDeleteCandidate] = useState<ManagedUser | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [draft, setDraft] = useState<UserDraft>(() => emptyUserDraft());
 
   const filtered = useMemo(
@@ -82,6 +93,14 @@ export function UserManagement({ users, onSave, onToggleActive }: UserManagement
     if (!draft.fullName.trim() || !draft.email.trim()) return;
     onSave(draft);
     setDialogOpen(false);
+  }
+
+  async function confirmDelete() {
+    if (!deleteCandidate) return;
+    setIsDeleting(true);
+    const deleted = await onDelete(deleteCandidate.id);
+    setIsDeleting(false);
+    if (deleted) setDeleteCandidate(null);
   }
 
   return (
@@ -150,6 +169,24 @@ export function UserManagement({ users, onSave, onToggleActive }: UserManagement
                   >
                     <EditIcon />
                   </IconButton>
+                </Tooltip>
+                <Tooltip
+                  title={
+                    user.id === currentUserId
+                      ? 'Du kan ikke slette din egen bruger'
+                      : 'Slet bruger'
+                  }
+                >
+                  <span>
+                    <IconButton
+                      color="error"
+                      disabled={user.id === currentUserId}
+                      aria-label={`Slet ${user.fullName}`}
+                      onClick={() => setDeleteCandidate(user)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               </Stack>
               <Stack
@@ -296,6 +333,34 @@ export function UserManagement({ users, onSave, onToggleActive }: UserManagement
           <Button onClick={() => setDialogOpen(false)}>Annuller</Button>
           <Button variant="contained" onClick={submit}>
             Gem bruger
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(deleteCandidate)}
+        onClose={() => !isDeleting && setDeleteCandidate(null)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>Slet bruger?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            {deleteCandidate?.fullName} fjernes permanent fra både DriftPortal og Supabase-login.
+            Handlingen kan ikke fortrydes.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={isDeleting} onClick={() => setDeleteCandidate(null)}>
+            Annuller
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+            onClick={() => void confirmDelete()}
+          >
+            Slet bruger
           </Button>
         </DialogActions>
       </Dialog>
