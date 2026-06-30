@@ -7,15 +7,22 @@ export interface SupabaseConfiguration {
 }
 
 function readConfiguration(): SupabaseConfiguration {
-  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+  const url = extractEnvironmentValue(import.meta.env.VITE_SUPABASE_URL, [
+    'VITE_SUPABASE_URL',
+  ]);
+  const anonKey = extractEnvironmentValue(
+    import.meta.env.VITE_SUPABASE_ANON_KEY ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    ['VITE_SUPABASE_ANON_KEY', 'VITE_SUPABASE_PUBLISHABLE_KEY'],
+  );
 
   if (!url || !anonKey) {
     return {
       url,
       anonKey,
       isConfigured: false,
-      issue: 'Supabase URL og public anon key mangler.',
+      issue: !url
+        ? 'GitHub-builden mangler VITE_SUPABASE_URL.'
+        : 'GitHub-builden mangler VITE_SUPABASE_ANON_KEY.',
     };
   }
 
@@ -45,6 +52,21 @@ function readConfiguration(): SupabaseConfiguration {
   } catch {
     return { url, anonKey, isConfigured: false, issue: 'Supabase URL er ikke gyldig.' };
   }
+}
+
+function extractEnvironmentValue(
+  rawValue: string | undefined,
+  variableNames: string[],
+): string | undefined {
+  if (!rawValue) return undefined;
+
+  const trimmedValue = rawValue.trim();
+  const matchingLine = trimmedValue
+    .split(/\r?\n/)
+    .find((line) => variableNames.some((name) => line.trim().startsWith(`${name}=`)));
+  const value = matchingLine ? matchingLine.slice(matchingLine.indexOf('=') + 1).trim() : trimmedValue;
+
+  return value.replace(/^['"]|['"]$/g, '').trim() || undefined;
 }
 
 export const supabaseConfiguration = readConfiguration();
