@@ -139,6 +139,51 @@ create table public.facility_work_orders (
   updated_at timestamptz not null default now()
 );
 
+create table public.inventory_items (
+  id text primary key,
+  name text not null,
+  category text not null,
+  location text not null,
+  quantity numeric not null default 0,
+  min_quantity numeric not null default 0,
+  max_quantity numeric not null default 0,
+  unit text not null default 'stk',
+  qr_code text unique,
+  note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.inventory_movements (
+  id text primary key,
+  item_id text not null references public.inventory_items(id) on delete cascade,
+  delta numeric not null,
+  quantity_after numeric not null,
+  reason text not null,
+  performed_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create table public.sds_documents (
+  id text primary key,
+  name text not null,
+  supplier text not null,
+  product_number text,
+  signal_word text not null,
+  hazard_codes text[] not null default '{}',
+  hazard_labels text[] not null default '{}',
+  location text not null,
+  emergency_phone text,
+  ppe text[] not null default '{}',
+  first_aid jsonb not null default '{}',
+  pdf_path text,
+  qr_code text unique,
+  revision_date date,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.activity_log enable row level security;
 alter table public.favorites enable row level security;
@@ -149,6 +194,9 @@ alter table public.round_points enable row level security;
 alter table public.round_sessions enable row level security;
 alter table public.round_checks enable row level security;
 alter table public.facility_work_orders enable row level security;
+alter table public.inventory_items enable row level security;
+alter table public.inventory_movements enable row level security;
+alter table public.sds_documents enable row level security;
 
 create policy "Profiles are visible to authenticated users"
   on public.profiles for select
@@ -263,6 +311,48 @@ create policy "Authenticated users can create facility work orders"
 
 create policy "Authenticated users can update facility work orders"
   on public.facility_work_orders for update
+  to authenticated
+  using (true)
+  with check (true);
+
+create policy "Inventory items visible to authenticated users"
+  on public.inventory_items for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can create inventory items"
+  on public.inventory_items for insert
+  to authenticated
+  with check (true);
+
+create policy "Authenticated users can update inventory items"
+  on public.inventory_items for update
+  to authenticated
+  using (true)
+  with check (true);
+
+create policy "Inventory movements visible to authenticated users"
+  on public.inventory_movements for select
+  to authenticated
+  using (true);
+
+create policy "Authenticated users can create inventory movements"
+  on public.inventory_movements for insert
+  to authenticated
+  with check (auth.uid() = performed_by);
+
+create policy "SDS documents visible to authenticated users"
+  on public.sds_documents for select
+  to authenticated
+  using (is_active);
+
+create policy "Authenticated users can create SDS documents"
+  on public.sds_documents for insert
+  to authenticated
+  with check (true);
+
+create policy "Authenticated users can update SDS documents"
+  on public.sds_documents for update
   to authenticated
   using (true)
   with check (true);
