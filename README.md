@@ -31,6 +31,9 @@ pnpm build
 
 Kopier `.env.example` til `.env.local` og indsæt Supabase URL + anon key.
 
+Den komplette guide til database, login, Storage og GitHub Secrets findes i
+`docs/supabase-setup.md`.
+
 ## Sprint 1
 
 Sprint 1 introducerer:

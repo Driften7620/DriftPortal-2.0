@@ -185,6 +185,26 @@ export function useAdministration() {
       if (error) return markFailed(error.message);
     }
 
+    const localUsers = users.filter(
+      (user) => user.syncStatus !== 'synced' && user.id.startsWith('local-user-'),
+    );
+    const invitedUsers = new Map<string, string>();
+    for (const user of localUsers) {
+      const { data, error } = await supabase.functions.invoke('invite-user', {
+        body: {
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          moduleAccess: user.moduleAccess,
+          redirectTo: new URL(import.meta.env.BASE_URL, window.location.origin).toString(),
+        },
+      });
+      if (error) return markFailed(error.message);
+      const invitedId = (data as { id?: string } | null)?.id;
+      if (!invitedId) return markFailed(`Invitationen til ${user.email} returnerede intet bruger-id.`);
+      invitedUsers.set(user.id, invitedId);
+    }
+
     const pendingLocations = locations.filter((item) => item.syncStatus !== 'synced');
     if (pendingLocations.length) {
       const locationResult = await supabase.from('system_locations').upsert(
@@ -231,11 +251,12 @@ export function useAdministration() {
     }
 
     setUsers((current) =>
-      current.map((item) =>
-        item.id.startsWith('local-user-')
-          ? item
-          : { ...item, syncStatus: 'synced', syncError: undefined },
-      ),
+      current.map((item) => ({
+        ...item,
+        id: invitedUsers.get(item.id) ?? item.id,
+        syncStatus: 'synced',
+        syncError: undefined,
+      })),
     );
     setLocations((current) =>
       current.map((item) => ({ ...item, syncStatus: 'synced', syncError: undefined })),
@@ -245,8 +266,8 @@ export function useAdministration() {
     );
     setSettings((current) => ({ ...current, syncStatus: 'synced', syncError: undefined }));
     setSyncMessage(
-      users.some((user) => user.id.startsWith('local-user-') && user.syncStatus !== 'synced')
-        ? 'Opsætningen er synkroniseret. Nye loginbrugere mangler stadig en invitation.'
+      localUsers.length
+        ? `${localUsers.length} brugerinvitation(er) er sendt, og opsætningen er synkroniseret.`
         : 'Systemopsætningen er synkroniseret.',
     );
   }

@@ -6,7 +6,16 @@ import prettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
 
 export default [
-  { ignores: ['dist', 'node_modules', 'outputs', 'work', '.pnpm-store'] },
+  {
+    ignores: [
+      'dist',
+      'node_modules',
+      'outputs',
+      'work',
+      '.pnpm-store',
+      'supabase/functions',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

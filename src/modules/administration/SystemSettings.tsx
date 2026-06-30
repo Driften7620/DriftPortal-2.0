@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import { BackendSetupPanel } from './BackendSetupPanel';
 import type { PortalSettings, SystemLocation } from './types';
 
 interface SystemSettingsProps {
@@ -28,6 +29,8 @@ export function SystemSettings({ settings, locations, onSave }: SystemSettingsPr
 
   return (
     <Stack spacing={2.5}>
+      <BackendSetupPanel />
+
       <Alert severity="info">
         Ændringer gemmes først på enheden. Brug Synk-knappen øverst for at sende dem til Supabase.
       </Alert>

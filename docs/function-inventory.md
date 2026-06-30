@@ -30,7 +30,7 @@ Statusforklaring:
 | Administration | Sprint 7 færdig som grundlag | Brugere, roller, moduladgang, lokationer, kategorier, offline-gem og systemindstillinger |
 | Global søgning | Skal bygges | Søg på tværs af målere, udstyr, SDS, jobs og manualer |
 | Push-notifikationer | Skal bygges | Opgaver, alarmer, godkendelser og reminders |
-| Synkronisering | Sprint 3.1 i gang | MålerLog gemmer lokalt først og kan synke afventende aflæsninger mod Supabase |
+| Synkronisering | Sprint 7.1 backendgrundlag | Lokal-først data, Supabase-klient, forbindelsestest, GitHub Secrets og serverfunktioner |
 | Køretøjer | Skal bygges | Service, syn, dæk, brændstof og kilometer |
 | Anlæg | Skal bygges | Pumper, motorer, ventiler, vekslere, kedler, billeder og historik |
 | Vedligeholdelsesplan | Skal bygges | Gentagne serviceopgaver og intervaller |

@@ -30,10 +30,11 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 6. Sprint 5 - Facility Service og Mine opgaver. Status: færdig som offline/synk-grundlag.
 7. Sprint 6 - Lagerstyring og SDS. Status: færdig som offline/synk-grundlag.
 8. Sprint 7 - Administration og systemopsætning. Status: færdig som offline/synk-grundlag.
-9. Sprint 8 - HR og Tid.
-10. Sprint 9 - How To Do og LiveConnect.
-11. Sprint 10 - Udstyr og El-eftersyn.
-12. Sprint 11 - Køretøjer, Anlæg, global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
+9. Sprint 7.1 - Supabase, server og sikker filhåndtering. Status: teknisk grundlag færdigt; projektoprettelse mangler.
+10. Sprint 8 - HR og Tid.
+11. Sprint 9 - How To Do og LiveConnect.
+12. Sprint 10 - Udstyr og El-eftersyn.
+13. Sprint 11 - Køretøjer, Anlæg, global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
 
 ## Sprint 2 leverance
 
@@ -101,6 +102,19 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Offline-gem og samlet synkstatus for hele systemopsætningen.
 - Supabase-tabellerne `system_locations`, `system_categories` og `portal_settings`.
 - Administratorpolitikker til opdatering af profiler og systemopsætning.
+
+## Sprint 7.1 leverance
+
+- Validering af Supabase URL og offentlig nøgle, før klienten startes.
+- Forbindelsespanel under Administration > System med databasekontrol.
+- GitHub Actions læser Supabase-værdier sikkert fra repository secrets.
+- Supabase-konfiguration til lokal udvikling, Auth, Storage og Edge Functions.
+- Seed-data til lokationer, kategorier og globale portalindstillinger.
+- Private Storage-buckets til SDS, jobbilag og udstyrsbilleder.
+- RLS-politikker til visning, upload, opdatering og sletning af filer.
+- Sikker Edge Function til brugerinvitation, som kun kan kaldes af administratorer.
+- Nye lokale brugere sendes som invitationer ved rigtig Supabase-synk.
+- Trinvis opsætningsguide i `docs/supabase-setup.md`.
 
 ## Nye moduler fra brief
 
