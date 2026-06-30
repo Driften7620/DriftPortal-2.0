@@ -1,5 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import CategoryIcon from '@mui/icons-material/Category';
+import DeleteIcon from '@mui/icons-material/Delete';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import {
   Box,
@@ -11,10 +12,12 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
   MenuItem,
   Stack,
   Switch,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useState } from 'react';
@@ -32,6 +35,7 @@ interface StructureSettingsProps {
   onAddLocation: (draft: LocationDraft) => void;
   onAddCategory: (draft: CategoryDraft) => void;
   onToggleLocation: (id: string) => void;
+  onDeleteLocation: (id: string) => Promise<boolean>;
   onToggleCategory: (id: string) => void;
 }
 
@@ -44,9 +48,13 @@ export function StructureSettings({
   onAddLocation,
   onAddCategory,
   onToggleLocation,
+  onDeleteLocation,
   onToggleCategory,
 }: StructureSettingsProps) {
   const [locationOpen, setLocationOpen] = useState(false);
+  const [deleteLocationCandidate, setDeleteLocationCandidate] =
+    useState<SystemLocation | null>(null);
+  const [isDeletingLocation, setIsDeletingLocation] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [locationDraft, setLocationDraft] = useState<LocationDraft>({
     name: '',
@@ -71,6 +79,14 @@ export function StructureSettings({
     onAddCategory(categoryDraft);
     setCategoryDraft({ name: '', area: categoryAreas[0], color: categoryColors[0] });
     setCategoryOpen(false);
+  }
+
+  async function confirmDeleteLocation() {
+    if (!deleteLocationCandidate) return;
+    setIsDeletingLocation(true);
+    const deleted = await onDeleteLocation(deleteLocationCandidate.id);
+    setIsDeletingLocation(false);
+    if (deleted) setDeleteLocationCandidate(null);
   }
 
   return (
@@ -102,6 +118,16 @@ export function StructureSettings({
                   </Typography>
                 </Box>
                 <Chip size="small" label={location.code} />
+                <Tooltip title="Slet lokation">
+                  <IconButton
+                    size="small"
+                    color="error"
+                    aria-label={`Slet ${location.name}`}
+                    onClick={() => setDeleteLocationCandidate(location)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1.5 }}>
                 {location.syncStatus !== 'synced' && (
@@ -251,6 +277,34 @@ export function StructureSettings({
           <Button onClick={() => setCategoryOpen(false)}>Annuller</Button>
           <Button variant="contained" onClick={saveCategory}>
             Gem kategori
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(deleteLocationCandidate)}
+        onClose={() => !isDeletingLocation && setDeleteLocationCandidate(null)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>Slet lokation?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            {deleteLocationCandidate?.name} fjernes permanent fra systemopsætningen. Eksisterende
+            historik beholder sit lokationsnavn.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={isDeletingLocation} onClick={() => setDeleteLocationCandidate(null)}>
+            Annuller
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={isDeletingLocation}
+            onClick={() => void confirmDeleteLocation()}
+          >
+            Slet lokation
           </Button>
         </DialogActions>
       </Dialog>
