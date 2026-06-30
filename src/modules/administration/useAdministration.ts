@@ -148,6 +148,25 @@ export function useAdministration() {
     setSyncMessage('Kategorien er gemt offline.');
   }
 
+  function updateCategory(id: string, draft: CategoryDraft) {
+    setCategories((current) =>
+      current.map((category) =>
+        category.id === id
+          ? {
+              ...category,
+              name: draft.name.trim(),
+              area: draft.area,
+              color: draft.color,
+              updatedAt: new Date().toISOString(),
+              syncStatus: 'pending',
+              syncError: undefined,
+            }
+          : category,
+      ),
+    );
+    setSyncMessage('Kategorien er opdateret offline.');
+  }
+
   function toggleLocation(id: string) {
     setLocations((current) =>
       current.map((location) =>
@@ -208,6 +227,30 @@ export function useAdministration() {
           : category,
       ),
     );
+  }
+
+  async function deleteCategory(id: string) {
+    const target = categories.find((category) => category.id === id);
+    if (!target) return false;
+    if (/^category-\d+$/.test(id)) {
+      setCategories((current) => current.filter((category) => category.id !== id));
+      setSyncMessage('Den lokale kategori er slettet.');
+      return true;
+    }
+    if (isDemoMode || !supabase) {
+      setSyncMessage('En synkroniseret kategori kan kun slettes med rigtig Supabase-login.');
+      return false;
+    }
+
+    const { error } = await supabase.from('system_categories').delete().eq('id', id);
+    if (error) {
+      setSyncMessage(`Kategorien kunne ikke slettes: ${error.message}`);
+      return false;
+    }
+
+    setCategories((current) => current.filter((category) => category.id !== id));
+    setSyncMessage(`${target.name} er slettet.`);
+    return true;
   }
 
   function updateSettings(next: PortalSettings) {
@@ -371,9 +414,11 @@ export function useAdministration() {
     deleteUser,
     addLocation,
     addCategory,
+    updateCategory,
     toggleLocation,
     deleteLocation,
     toggleCategory,
+    deleteCategory,
     updateSettings,
     syncPending,
   };
