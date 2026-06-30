@@ -3,6 +3,7 @@ import type { PropsWithChildren } from 'react';
 
 import { demoUser } from '../features/auth/roleAccess';
 import { supabase } from '../services/supabaseClient';
+import { supabaseConfiguration } from '../services/supabaseConfig';
 import type { AuthState, SignInInput, UserProfile } from '../types/auth';
 
 interface AuthContextValue extends AuthState {
@@ -77,7 +78,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const signIn = useCallback(async ({ email, password }: SignInInput) => {
     if (!supabase) {
-      throw new Error('Supabase er ikke konfigureret endnu. Brug demo-login i Sprint 1.');
+      throw new Error(
+        supabaseConfiguration.issue ??
+          'Supabase er ikke konfigureret endnu. Brug demo-login midlertidigt.',
+      );
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
