@@ -2,6 +2,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import HomeIcon from '@mui/icons-material/Home';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import LogoutIcon from '@mui/icons-material/Logout';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -12,6 +13,9 @@ import {
   Chip,
   IconButton,
   InputAdornment,
+  ListItemIcon,
+  Menu,
+  MenuItem,
   Stack,
   TextField,
   Toolbar,
@@ -19,6 +23,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import type { PaletteMode } from '@mui/material';
+import { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
@@ -34,10 +39,16 @@ export function AppShell({ colorMode }: AppShellProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const compact = useMediaQuery('(max-width:720px)');
+  const [profileAnchor, setProfileAnchor] = useState<null | HTMLElement>(null);
   const { user, isDemoMode, signOut } = useAuth();
 
   return (
-    <Box sx={{ minHeight: '100vh', pb: compact ? 10 : 3 }}>
+    <Box
+      sx={{
+        minHeight: '100dvh',
+        pb: compact ? 'calc(80px + env(safe-area-inset-bottom))' : 3,
+      }}
+    >
       <AppBar
         position="sticky"
         elevation={0}
@@ -45,9 +56,16 @@ export function AppShell({ colorMode }: AppShellProps) {
           bgcolor: 'rgba(7, 11, 18, 0.88)',
           backdropFilter: 'blur(18px)',
           borderBottom: '1px solid rgba(148, 163, 184, 0.16)',
+          pt: 'env(safe-area-inset-top)',
         }}
       >
-        <Toolbar sx={{ gap: 2, minHeight: { xs: 72, md: 80 } }}>
+        <Toolbar
+          sx={{
+            gap: { xs: 0.5, md: 2 },
+            minHeight: { xs: 64, md: 80 },
+            px: { xs: 1.5, sm: 2, md: 3 },
+          }}
+        >
           <Box
             component="button"
             onClick={() => navigate('/')}
@@ -55,30 +73,39 @@ export function AppShell({ colorMode }: AppShellProps) {
             sx={{
               display: 'flex',
               alignItems: 'center',
-              gap: 1.5,
+              gap: { xs: 1, md: 1.5 },
               bgcolor: 'transparent',
               border: 0,
               color: 'inherit',
               cursor: 'pointer',
               p: 0,
+              flexShrink: 0,
             }}
           >
             <Box
               sx={{
-                width: 32,
-                height: 20,
+                width: { xs: 28, md: 32 },
+                height: { xs: 18, md: 20 },
                 borderRadius: 1,
                 bgcolor: '#ef2b2d',
                 boxShadow: 'inset 0 -8px 0 #05070b',
               }}
             />
-            <Typography variant="h5" sx={{ color: '#00e5ff', fontWeight: 800 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: '#00e5ff',
+                fontWeight: 800,
+                fontSize: { xs: '1.15rem', md: '1.5rem' },
+              }}
+            >
               Status
             </Typography>
             <Chip
               size="small"
               label="ONLINE"
               sx={{
+                display: { xs: 'none', sm: 'inline-flex' },
                 color: '#00e5ff',
                 bgcolor: 'rgba(0, 229, 255, 0.1)',
                 fontWeight: 800,
@@ -102,19 +129,55 @@ export function AppShell({ colorMode }: AppShellProps) {
             />
           )}
 
-          <Stack direction="row" spacing={1} sx={{ ml: compact ? 'auto' : 0 }}>
+          <Stack
+            direction="row"
+            spacing={{ xs: 0, sm: 0.5, md: 1 }}
+            sx={{ ml: 'auto', alignItems: 'center', flexShrink: 0 }}
+          >
             <IconButton aria-label="Scan QR-kode">
               <QrCodeScannerIcon />
             </IconButton>
             <IconButton aria-label="Skift tema" onClick={colorMode.toggleMode}>
               {colorMode.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
-            <Chip
-              icon={<AccountCircleIcon />}
-              label={`${user?.fullName ?? 'Bruger'}${isDemoMode ? ' · demo' : ''}`}
-              onDelete={signOut}
-              sx={{ fontWeight: 700 }}
-            />
+            {compact ? (
+              <>
+                <IconButton
+                  aria-label="Åbn profilmenu"
+                  onClick={(event) => setProfileAnchor(event.currentTarget)}
+                >
+                  <AccountCircleIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={profileAnchor}
+                  open={Boolean(profileAnchor)}
+                  onClose={() => setProfileAnchor(null)}
+                >
+                  <MenuItem disabled>
+                    {user?.fullName ?? 'Bruger'}
+                    {isDemoMode ? ' · demo' : ''}
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setProfileAnchor(null);
+                      void signOut();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    Log ud
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Chip
+                icon={<AccountCircleIcon />}
+                label={`${user?.fullName ?? 'Bruger'}${isDemoMode ? ' · demo' : ''}`}
+                onDelete={signOut}
+                sx={{ fontWeight: 700 }}
+              />
+            )}
           </Stack>
         </Toolbar>
       </AppBar>
@@ -136,7 +199,8 @@ export function AppShell({ colorMode }: AppShellProps) {
             backdropFilter: 'blur(18px)',
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
-            py: 1,
+            pt: 1,
+            pb: 'calc(8px + env(safe-area-inset-bottom))',
           }}
         >
           {[

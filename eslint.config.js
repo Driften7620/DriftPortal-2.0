@@ -6,9 +6,15 @@ import prettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'node_modules', 'outputs', 'work', '.pnpm-store'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: globals.serviceworker,
+    },
+  },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
