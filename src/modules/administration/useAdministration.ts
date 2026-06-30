@@ -136,9 +136,9 @@ export function useAdministration() {
       setSyncMessage('Du kan ikke slette den bruger, du selv er logget ind som.');
       return false;
     }
-    if (id.startsWith('local-user-')) {
+    if (id.startsWith('local-user-') || id.startsWith('demo-')) {
       setUsers((current) => current.filter((user) => user.id !== id));
-      setSyncMessage('Den lokale bruger er slettet.');
+      setSyncMessage('Den lokale bruger er slettet fra denne enhed.');
       return true;
     }
     if (isDemoMode || !supabase) {
