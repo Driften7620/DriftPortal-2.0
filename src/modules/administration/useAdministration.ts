@@ -42,6 +42,45 @@ export function useAdministration() {
   useEffect(() => saveCategories(categories), [categories]);
   useEffect(() => savePortalSettings(settings), [settings]);
 
+  useEffect(() => {
+    if (isDemoMode || !supabase || !currentUser?.id) return;
+
+    let isMounted = true;
+
+    async function loadRemoteUsers() {
+      const { data, error } = await supabase!
+        .from('profiles')
+        .select('id,email,full_name,role,module_access,is_active,updated_at')
+        .order('full_name');
+
+      if (!isMounted) return;
+      if (error) {
+        setSyncMessage(`Brugerne kunne ikke hentes fra Supabase: ${error.message}`);
+        return;
+      }
+
+      setUsers(
+        (data ?? []).map((profile) => ({
+          id: profile.id,
+          fullName: profile.full_name,
+          email: profile.email ?? '',
+          phone: '',
+          jobTitle: 'Medarbejder',
+          role: profile.role as ManagedUser['role'],
+          moduleAccess: profile.module_access ?? [],
+          isActive: profile.is_active ?? true,
+          updatedAt: profile.updated_at,
+          syncStatus: 'synced',
+        })),
+      );
+    }
+
+    void loadRemoteUsers();
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser?.id, isDemoMode]);
+
   const pendingCount = useMemo(
     () =>
       users.filter((item) => item.syncStatus !== 'synced').length +
@@ -111,7 +150,17 @@ export function useAdministration() {
       body: { userId: id },
     });
     if (error) {
-      setSyncMessage(`Brugeren kunne ikke slettes: ${error.message}`);
+      let message = error.message;
+      const response = (error as { context?: Response }).context;
+      if (response) {
+        try {
+          const body = (await response.json()) as { error?: string };
+          message = body.error ?? message;
+        } catch {
+          // Keep the original function error when the response is not JSON.
+        }
+      }
+      setSyncMessage(`Brugeren kunne ikke slettes: ${message}`);
       return false;
     }
 
