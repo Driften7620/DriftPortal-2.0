@@ -1,6 +1,7 @@
 import AddIcon from '@mui/icons-material/Add';
 import CategoryIcon from '@mui/icons-material/Category';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import {
   Box,
@@ -34,9 +35,11 @@ interface StructureSettingsProps {
   categories: SystemCategory[];
   onAddLocation: (draft: LocationDraft) => void;
   onAddCategory: (draft: CategoryDraft) => void;
+  onUpdateCategory: (id: string, draft: CategoryDraft) => void;
   onToggleLocation: (id: string) => void;
   onDeleteLocation: (id: string) => Promise<boolean>;
   onToggleCategory: (id: string) => void;
+  onDeleteCategory: (id: string) => Promise<boolean>;
 }
 
 const categoryAreas = ['Opgaver', 'Lager', 'MålerLog', 'Rundering', 'SDS'];
@@ -47,15 +50,21 @@ export function StructureSettings({
   categories,
   onAddLocation,
   onAddCategory,
+  onUpdateCategory,
   onToggleLocation,
   onDeleteLocation,
   onToggleCategory,
+  onDeleteCategory,
 }: StructureSettingsProps) {
   const [locationOpen, setLocationOpen] = useState(false);
   const [deleteLocationCandidate, setDeleteLocationCandidate] =
     useState<SystemLocation | null>(null);
   const [isDeletingLocation, setIsDeletingLocation] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<SystemCategory | null>(null);
+  const [deleteCategoryCandidate, setDeleteCategoryCandidate] =
+    useState<SystemCategory | null>(null);
+  const [isDeletingCategory, setIsDeletingCategory] = useState(false);
   const [locationDraft, setLocationDraft] = useState<LocationDraft>({
     name: '',
     code: '',
@@ -76,9 +85,36 @@ export function StructureSettings({
 
   function saveCategory() {
     if (!categoryDraft.name.trim()) return;
-    onAddCategory(categoryDraft);
+    if (editingCategory) {
+      onUpdateCategory(editingCategory.id, categoryDraft);
+    } else {
+      onAddCategory(categoryDraft);
+    }
     setCategoryDraft({ name: '', area: categoryAreas[0], color: categoryColors[0] });
+    setEditingCategory(null);
     setCategoryOpen(false);
+  }
+
+  function openNewCategory() {
+    setEditingCategory(null);
+    setCategoryDraft({ name: '', area: categoryAreas[0], color: categoryColors[0] });
+    setCategoryOpen(true);
+  }
+
+  function openEditCategory(category: SystemCategory) {
+    setEditingCategory(category);
+    setCategoryDraft({
+      name: category.name,
+      area: category.area,
+      color: category.color,
+    });
+    setCategoryOpen(true);
+  }
+
+  function closeCategoryDialog() {
+    setCategoryOpen(false);
+    setEditingCategory(null);
+    setCategoryDraft({ name: '', area: categoryAreas[0], color: categoryColors[0] });
   }
 
   async function confirmDeleteLocation() {
@@ -87,6 +123,14 @@ export function StructureSettings({
     const deleted = await onDeleteLocation(deleteLocationCandidate.id);
     setIsDeletingLocation(false);
     if (deleted) setDeleteLocationCandidate(null);
+  }
+
+  async function confirmDeleteCategory() {
+    if (!deleteCategoryCandidate) return;
+    setIsDeletingCategory(true);
+    const deleted = await onDeleteCategory(deleteCategoryCandidate.id);
+    setIsDeletingCategory(false);
+    if (deleted) setDeleteCategoryCandidate(null);
   }
 
   return (
@@ -154,7 +198,7 @@ export function StructureSettings({
             Kategorier giver ensartede filtre og farver på tværs af moduler.
           </Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCategoryOpen(true)}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={openNewCategory}>
           Ny kategori
         </Button>
       </Stack>
@@ -177,6 +221,25 @@ export function StructureSettings({
                     {category.area}
                   </Typography>
                 </Box>
+                <Tooltip title="Rediger kategori">
+                  <IconButton
+                    size="small"
+                    aria-label={`Rediger ${category.name}`}
+                    onClick={() => openEditCategory(category)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Slet kategori">
+                  <IconButton
+                    size="small"
+                    color="error"
+                    aria-label={`Slet ${category.name}`}
+                    onClick={() => setDeleteCategoryCandidate(category)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
                 <Switch
                   checked={category.isActive}
                   onChange={() => onToggleCategory(category.id)}
@@ -224,8 +287,8 @@ export function StructureSettings({
         </DialogActions>
       </Dialog>
 
-      <Dialog open={categoryOpen} onClose={() => setCategoryOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Ny kategori</DialogTitle>
+      <Dialog open={categoryOpen} onClose={closeCategoryDialog} fullWidth maxWidth="sm">
+        <DialogTitle>{editingCategory ? 'Rediger kategori' : 'Ny kategori'}</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             <TextField
@@ -274,9 +337,9 @@ export function StructureSettings({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCategoryOpen(false)}>Annuller</Button>
+          <Button onClick={closeCategoryDialog}>Annuller</Button>
           <Button variant="contained" onClick={saveCategory}>
-            Gem kategori
+            {editingCategory ? 'Gem ændringer' : 'Gem kategori'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -305,6 +368,34 @@ export function StructureSettings({
             onClick={() => void confirmDeleteLocation()}
           >
             Slet lokation
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(deleteCategoryCandidate)}
+        onClose={() => !isDeletingCategory && setDeleteCategoryCandidate(null)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>Slet kategori?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            {deleteCategoryCandidate?.name} fjernes permanent fra systemopsætningen. Eksisterende
+            historik beholder kategorinavnet.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button disabled={isDeletingCategory} onClick={() => setDeleteCategoryCandidate(null)}>
+            Annuller
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={isDeletingCategory}
+            onClick={() => void confirmDeleteCategory()}
+          >
+            Slet kategori
           </Button>
         </DialogActions>
       </Dialog>
