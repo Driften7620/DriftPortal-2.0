@@ -17,8 +17,8 @@ Statusforklaring:
 | Rundering | Sprint 4 i gang | Runder, lokationer, kontrolpunkter, OK/afvigelse/spring over, lokal gem, QR/NFC, undtagelser |
 | Facility Service | Sprint 5 færdig som grundlag | Jobs, tildeling, opgaver, checklister, kommentarer, materialer, offline og synk |
 | Mine Opgaver | Sprint 5 færdig som grundlag | Personlige opgaver, start/pause/afslut, checklister, kommentarer og materialer |
-| Lagerstyring | Reference fundet | Beholdning, min/max, lagerlog, QR, indkøbsliste, lokationer |
-| SDS | Reference fundet | Sikkerhedsdatablade, PDF, billeder, fareinfo, nødtelefon |
+| Lagerstyring | Sprint 6 færdig som grundlag | Beholdning, min/max, lagerlog, lokal gem, Supabase-synk, QR, lokationer |
+| SDS | Sprint 6 færdig som grundlag | Søgning, favoritter, førstehjælp, værnemidler, PDF/QR-forberedelse, fareinfo og nødtelefon |
 | HR bruger | Reference fundet | Arbejdstid, ferie/fri, saldo, kalender, ansøgninger |
 | HR admin | Reference fundet | Godkendelser, brugerfilter, log, saldo, låsning, overførsler |
 | Tid bruger | Reference fundet | Tidsregistrering, udkald og log |
@@ -27,7 +27,7 @@ Statusforklaring:
 | LiveConnect | Reference fundet | Eksternt driftsdashboard med fallback |
 | Udstyr | Reference fundet | Udlån, reservation, returnering, billeder, godkendelsesstatus |
 | El-eftersyn | Reference fundet | Eftersyn, fund, frister, CSV og alarmer |
-| Administration | Reference fundet | Moduladgang, backup, QR-print, nulstilling og systemindstillinger |
+| Administration | Sprint 7 færdig som grundlag | Brugere, roller, moduladgang, lokationer, kategorier, offline-gem og systemindstillinger |
 | Global søgning | Skal bygges | Søg på tværs af målere, udstyr, SDS, jobs og manualer |
 | Push-notifikationer | Skal bygges | Opgaver, alarmer, godkendelser og reminders |
 | Synkronisering | Sprint 3.1 i gang | MålerLog gemmer lokalt først og kan synke afventende aflæsninger mod Supabase |

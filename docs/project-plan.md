@@ -28,11 +28,12 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 4. Sprint 3 - MålerLog. Status: færdig som offline/synk-grundlag.
 5. Sprint 4 - Rundering som PlantLog-inspireret modul. Status: færdig som offline/synk-grundlag.
 6. Sprint 5 - Facility Service og Mine opgaver. Status: færdig som offline/synk-grundlag.
-7. Sprint 6 - Lagerstyring og SDS.
-8. Sprint 7 - HR og Tid.
-9. Sprint 8 - How To Do og LiveConnect.
-10. Sprint 9 - Udstyr og El-eftersyn.
-11. Sprint 10 - Køretøjer, Anlæg, global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
+7. Sprint 6 - Lagerstyring og SDS. Status: færdig som offline/synk-grundlag.
+8. Sprint 7 - Administration og systemopsætning. Status: færdig som offline/synk-grundlag.
+9. Sprint 8 - HR og Tid.
+10. Sprint 9 - How To Do og LiveConnect.
+11. Sprint 10 - Udstyr og El-eftersyn.
+12. Sprint 11 - Køretøjer, Anlæg, global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
 
 ## Sprint 2 leverance
 
@@ -74,6 +75,32 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Facility Service og Mine Opgaver deler samme lokale data og virker offline.
 - Synk-status og rigtig Supabase-upsert, når login og miljøvariabler er konfigureret.
 - Supabase-tabellen `facility_work_orders` med RLS-politikker.
+
+## Sprint 6 leverance
+
+- Lagerstyring med søgning, lokations- og kategorifilter samt tydelig min./maks.-status.
+- Lagerbevægelser registrerer antal, årsag, bruger og tidspunkt og gemmes straks offline.
+- Nye lagervarer kan oprettes med kategori, lokation, enhed og beholdningsgrænser.
+- Afventende lagervarer og bevægelser kan synkroniseres til Supabase.
+- SDS-bibliotek med søgning på kemikalie, leverandør, H-kode, lokation og signalord.
+- Kemikaliedetaljer med farer, værnemidler, førstehjælp, nødtelefon og revisionsdato.
+- Favoritter og senest viste sikkerhedsdatablade gemmes lokalt.
+- PDF- og QR-felter er forberedt til Supabase Storage og scannerintegration.
+- Supabase-tabellerne `inventory_items`, `inventory_movements` og `sds_documents` med RLS-politikker.
+
+## Sprint 7 leverance
+
+- Samlet administrationsmodul med faner til oversigt, brugere, struktur og system.
+- Brugerliste med søgning, rollefilter, aktiv/deaktiveret status og redigering.
+- Rollevalg med standardadgang og individuel moduladgang pr. bruger.
+- Oprettelse af nye brugere lokalt med klargøring til Supabase-invitation.
+- Fælles lokationer med kode, adresse og aktiv status.
+- Fælles kategorier med anvendelsesområde, farve og aktiv status.
+- Systemindstillinger for organisationsnavn, nødtelefon og standardlokation.
+- Indstillinger for automatisk synk, offline-funktioner, push og synkinterval.
+- Offline-gem og samlet synkstatus for hele systemopsætningen.
+- Supabase-tabellerne `system_locations`, `system_categories` og `portal_settings`.
+- Administratorpolitikker til opdatering af profiler og systemopsætning.
 
 ## Nye moduler fra brief
 

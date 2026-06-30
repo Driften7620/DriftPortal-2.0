@@ -184,6 +184,54 @@ create table public.sds_documents (
   updated_at timestamptz not null default now()
 );
 
+create table public.system_locations (
+  id text primary key,
+  name text not null,
+  code text not null unique,
+  address text not null default '',
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.system_categories (
+  id text primary key,
+  name text not null,
+  area text not null,
+  color text not null default '#00e5ff',
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table public.portal_settings (
+  id text primary key default 'global',
+  organization_name text not null,
+  emergency_phone text not null default '',
+  default_location_id text references public.system_locations(id) on delete set null,
+  sync_interval_minutes integer not null default 15,
+  automatic_sync boolean not null default true,
+  push_notifications boolean not null default false,
+  offline_mode boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+create or replace function public.is_portal_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.profiles
+    where id = auth.uid()
+      and role in ('system_admin', 'admin')
+      and is_active = true
+  );
+$$;
+
 alter table public.profiles enable row level security;
 alter table public.activity_log enable row level security;
 alter table public.favorites enable row level security;
@@ -197,6 +245,9 @@ alter table public.facility_work_orders enable row level security;
 alter table public.inventory_items enable row level security;
 alter table public.inventory_movements enable row level security;
 alter table public.sds_documents enable row level security;
+alter table public.system_locations enable row level security;
+alter table public.system_categories enable row level security;
+alter table public.portal_settings enable row level security;
 
 create policy "Profiles are visible to authenticated users"
   on public.profiles for select
@@ -208,6 +259,12 @@ create policy "Users can update their own profile basics"
   to authenticated
   using (auth.uid() = id)
   with check (auth.uid() = id);
+
+create policy "Admins can update profiles"
+  on public.profiles for update
+  to authenticated
+  using (public.is_portal_admin())
+  with check (public.is_portal_admin());
 
 create policy "Activity log visible to authenticated users"
   on public.activity_log for select
@@ -356,6 +413,54 @@ create policy "Authenticated users can update SDS documents"
   to authenticated
   using (true)
   with check (true);
+
+create policy "System locations visible to authenticated users"
+  on public.system_locations for select
+  to authenticated
+  using (true);
+
+create policy "Admins can create system locations"
+  on public.system_locations for insert
+  to authenticated
+  with check (public.is_portal_admin());
+
+create policy "Admins can update system locations"
+  on public.system_locations for update
+  to authenticated
+  using (public.is_portal_admin())
+  with check (public.is_portal_admin());
+
+create policy "System categories visible to authenticated users"
+  on public.system_categories for select
+  to authenticated
+  using (true);
+
+create policy "Admins can create system categories"
+  on public.system_categories for insert
+  to authenticated
+  with check (public.is_portal_admin());
+
+create policy "Admins can update system categories"
+  on public.system_categories for update
+  to authenticated
+  using (public.is_portal_admin())
+  with check (public.is_portal_admin());
+
+create policy "Portal settings visible to authenticated users"
+  on public.portal_settings for select
+  to authenticated
+  using (true);
+
+create policy "Admins can create portal settings"
+  on public.portal_settings for insert
+  to authenticated
+  with check (public.is_portal_admin());
+
+create policy "Admins can update portal settings"
+  on public.portal_settings for update
+  to authenticated
+  using (public.is_portal_admin())
+  with check (public.is_portal_admin());
 
 create or replace function public.handle_new_user()
 returns trigger

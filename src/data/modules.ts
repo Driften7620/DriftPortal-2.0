@@ -80,8 +80,9 @@ export const driftModules: DriftModule[] = [
     description: 'Beholdning, lokationer, QR og indkøbsliste',
     accent: '#ffd166',
     icon: InventoryIcon,
-    status: 'ok',
-    sprint: 'Sprint 5',
+    status: 'warning',
+    badge: '2 skal bestilles',
+    sprint: 'Sprint 6',
     legacyCoverage: ['minimum/maksimum', 'lagerlog', 'QR', 'lokationer', 'alarmer'],
   },
   {
@@ -91,7 +92,7 @@ export const driftModules: DriftModule[] = [
     accent: '#fbbf24',
     icon: DescriptionIcon,
     status: 'ok',
-    sprint: 'Sprint 5',
+    sprint: 'Sprint 6',
     legacyCoverage: ['PDF', 'billeder', 'fareklasse', 'nødtelefon', 'lokationer'],
   },
   {
@@ -102,7 +103,7 @@ export const driftModules: DriftModule[] = [
     icon: PeopleIcon,
     status: 'ok',
     badge: '1 afventer',
-    sprint: 'Sprint 6',
+    sprint: 'Sprint 8',
     legacyCoverage: ['arbejdstid', 'ferieansøgning', 'saldo', 'HR-admin', 'feriekalender'],
   },
   {
@@ -112,7 +113,7 @@ export const driftModules: DriftModule[] = [
     accent: '#f97316',
     icon: TimerIcon,
     status: 'ok',
-    sprint: 'Sprint 6',
+    sprint: 'Sprint 8',
     legacyCoverage: ['tidslog', 'udkald', 'manuel registrering', 'admin-godkendelse'],
   },
   {
@@ -122,7 +123,7 @@ export const driftModules: DriftModule[] = [
     accent: '#34d399',
     icon: MenuBookIcon,
     status: 'ok',
-    sprint: 'Sprint 7',
+    sprint: 'Sprint 9',
     legacyCoverage: ['manualer', 'filer', 'lokationer', 'QR'],
   },
   {
@@ -132,7 +133,7 @@ export const driftModules: DriftModule[] = [
     accent: '#10b981',
     icon: QueryStatsIcon,
     status: 'ok',
-    sprint: 'Sprint 7',
+    sprint: 'Sprint 9',
     legacyCoverage: ['iframe-dashboard', 'ekstern data', 'fallback'],
   },
   {
@@ -142,7 +143,7 @@ export const driftModules: DriftModule[] = [
     accent: '#22d3ee',
     icon: EngineeringIcon,
     status: 'ok',
-    sprint: 'Sprint 8',
+    sprint: 'Sprint 10',
     legacyCoverage: ['lån', 'reservationer', 'returnering', 'billeder', 'alarmer'],
   },
   {
@@ -153,7 +154,7 @@ export const driftModules: DriftModule[] = [
     icon: ElectricalServicesIcon,
     status: 'warning',
     badge: '1 kræver eftersyn',
-    sprint: 'Sprint 8',
+    sprint: 'Sprint 10',
     legacyCoverage: ['inspektioner', 'godkendelse', 'fund', 'CSV', 'fristalarmer'],
   },
   {
@@ -183,7 +184,8 @@ export const driftModules: DriftModule[] = [
     accent: '#94a3b8',
     icon: SettingsIcon,
     status: 'ok',
-    sprint: 'Sprint 1',
+    badge: 'Opsæt system',
+    sprint: 'Sprint 7',
     legacyCoverage: ['brugere', 'roller', 'moduladgang', 'backup', 'QR print'],
   },
   {

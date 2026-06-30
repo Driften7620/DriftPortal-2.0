@@ -7,10 +7,13 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { driftModules } from '../data/modules';
 import { canAccessModule } from '../features/auth/roleAccess';
+import { AdministrationPage } from '../modules/administration/AdministrationPage';
 import { FacilityServicePage } from '../modules/facility/FacilityServicePage';
 import { MineOpgaverPage } from '../modules/facility/MineOpgaverPage';
 import { MaalerLogPage } from '../modules/maalerlog/MaalerLogPage';
+import { LagerstyringPage } from '../modules/lager/LagerstyringPage';
 import { RunderingPage } from '../modules/rundering/RunderingPage';
+import { SdsPage } from '../modules/sds/SdsPage';
 
 export function ModulePage() {
   const { moduleId } = useParams();
@@ -25,6 +28,9 @@ export function ModulePage() {
   if (module.id === 'rundering') return <RunderingPage />;
   if (module.id === 'facility-service') return <FacilityServicePage />;
   if (module.id === 'mine-opgaver') return <MineOpgaverPage />;
+  if (module.id === 'lagerstyring') return <LagerstyringPage />;
+  if (module.id === 'sds') return <SdsPage />;
+  if (module.id === 'administration') return <AdministrationPage />;
 
   const Icon = module.icon;
 
