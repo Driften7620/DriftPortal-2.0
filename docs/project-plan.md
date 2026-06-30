@@ -115,6 +115,7 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Sikker Edge Function til brugerinvitation, som kun kan kaldes af administratorer.
 - Nye lokale brugere sendes som invitationer ved rigtig Supabase-synk.
 - Trinvis opsætningsguide i `docs/supabase-setup.md`.
+- Rigtig login opdaterer sessionen direkte uden forkert redirect fra GitHub Pages.
 
 ## Nye moduler fra brief
 

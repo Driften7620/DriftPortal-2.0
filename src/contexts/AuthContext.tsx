@@ -80,9 +80,27 @@ export function AuthProvider({ children }: PropsWithChildren) {
       throw new Error('Supabase er ikke konfigureret endnu. Brug demo-login i Sprint 1.');
     }
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-    window.location.assign('/');
+
+    const authUser = data.user;
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id,email,full_name,role,module_access,is_active')
+      .eq('id', authUser.id)
+      .single();
+
+    if (profileError || !profile) {
+      await supabase.auth.signOut();
+      throw new Error('Brugerprofilen kunne ikke hentes. Kontakt en administrator.');
+    }
+
+    localStorage.removeItem(demoStorageKey);
+    setState({
+      user: mapProfile(profile),
+      isLoading: false,
+      isDemoMode: false,
+    });
   }, []);
 
   const signInDemo = useCallback(() => {
