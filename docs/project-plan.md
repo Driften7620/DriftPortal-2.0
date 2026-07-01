@@ -31,7 +31,7 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 7. Sprint 6 - Lagerstyring og SDS. Status: færdig som offline/synk-grundlag.
 8. Sprint 7 - Administration og systemopsætning. Status: færdig som offline/synk-grundlag.
 9. Sprint 7.1 - Supabase, server og sikker filhåndtering. Status: teknisk grundlag færdigt; projektoprettelse mangler.
-10. Sprint 8 - HR og Tid.
+10. Sprint 8 - HR og Tid. Status: færdig som offline/synk-grundlag.
 11. Sprint 9 - How To Do og LiveConnect.
 12. Sprint 10 - Udstyr og El-eftersyn.
 13. Sprint 11 - Køretøjer, Anlæg, global søgning, rapporter, Excel/PDF, notifikationer og dokumentation.
@@ -126,6 +126,20 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Brugerinvitationer kan gentages sikkert, hvis brugeren allerede blev oprettet ved et tidligere forsøg.
 - Synkronisering registreres i aktivitetsloggen med antal ændrede poster.
 - Seneste kontakt med Supabase vises i administrationsmodulet.
+
+## Sprint 8 leverance
+
+- HR-oversigt med ferie, flekssaldo, afventende arbejdstid og ansøgninger.
+- Registrering af arbejdsdage med automatisk beregning af timer og pauser.
+- Ansøgning om ferie, feriefridage, omsorgsdage og fri uden løn.
+- HR Admin kan godkende eller afvise registreringer med kommentar.
+- HR Admin kan redigere ferie-, fleks-, fridags- og omsorgsdagssaldi.
+- Tidsregistrering med ordinær tid, overarbejde, udkald, kørsel og kursus.
+- Udkaldstimer udfylder automatisk start og slut i en ny registrering.
+- Afventende tidsregistreringer kan redigeres; behandlede registreringer låses.
+- Tid Admin kan godkende, afvise, lukke perioder og eksportere timer til CSV/Excel.
+- HR og Tid gemmer lokalt med det samme og synkroniserer til Supabase.
+- Supabase-tabeller og RLS-politikker til egne data samt HR/Tid-administratorer.
 
 ## Nye moduler fra brief
 

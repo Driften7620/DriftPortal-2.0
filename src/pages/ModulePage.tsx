@@ -10,10 +10,12 @@ import { canAccessModule } from '../features/auth/roleAccess';
 import { AdministrationPage } from '../modules/administration/AdministrationPage';
 import { FacilityServicePage } from '../modules/facility/FacilityServicePage';
 import { MineOpgaverPage } from '../modules/facility/MineOpgaverPage';
+import { HrPage } from '../modules/hr/HrPage';
 import { MaalerLogPage } from '../modules/maalerlog/MaalerLogPage';
 import { LagerstyringPage } from '../modules/lager/LagerstyringPage';
 import { RunderingPage } from '../modules/rundering/RunderingPage';
 import { SdsPage } from '../modules/sds/SdsPage';
+import { TimePage } from '../modules/tid/TimePage';
 
 export function ModulePage() {
   const { moduleId } = useParams();
@@ -30,6 +32,8 @@ export function ModulePage() {
   if (module.id === 'mine-opgaver') return <MineOpgaverPage />;
   if (module.id === 'lagerstyring') return <LagerstyringPage />;
   if (module.id === 'sds') return <SdsPage />;
+  if (module.id === 'hr') return <HrPage />;
+  if (module.id === 'tid') return <TimePage />;
   if (module.id === 'administration') return <AdministrationPage />;
 
   const Icon = module.icon;

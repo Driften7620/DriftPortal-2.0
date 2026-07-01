@@ -19,10 +19,10 @@ Statusforklaring:
 | Mine Opgaver | Sprint 5 færdig som grundlag | Personlige opgaver, start/pause/afslut, checklister, kommentarer og materialer |
 | Lagerstyring | Sprint 6 færdig som grundlag | Beholdning, min/max, lagerlog, lokal gem, Supabase-synk, QR, lokationer |
 | SDS | Sprint 6 færdig som grundlag | Søgning, favoritter, førstehjælp, værnemidler, PDF/QR-forberedelse, fareinfo og nødtelefon |
-| HR bruger | Reference fundet | Arbejdstid, ferie/fri, saldo, kalender, ansøgninger |
-| HR admin | Reference fundet | Godkendelser, brugerfilter, log, saldo, låsning, overførsler |
-| Tid bruger | Reference fundet | Tidsregistrering, udkald og log |
-| Tid admin | Reference fundet | Godkendelse, takster, oversigt og indstillinger |
+| HR bruger | Sprint 8 færdig som grundlag | Arbejdstid, ferie/fri, saldo, kalender og ansøgninger med offline-gem |
+| HR admin | Sprint 8 færdig som grundlag | Godkendelser, kommentarer og redigering af medarbejdersaldi |
+| Tid bruger | Sprint 8 færdig som grundlag | Tidsregistrering, redigering af afventende tid, udkaldstimer og historik |
+| Tid admin | Sprint 8 færdig som grundlag | Godkendelse, afvisning, perioder og CSV/Excel-eksport |
 | How To Do | Reference fundet | Manualer, filer, lokationer og QR |
 | LiveConnect | Reference fundet | Eksternt driftsdashboard med fallback |
 | Udstyr | Reference fundet | Udlån, reservation, returnering, billeder, godkendelsesstatus |
