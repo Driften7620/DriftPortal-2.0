@@ -43,9 +43,6 @@ Deno.serve(async (request) => {
   }
 
   if (!payload.userId) return json({ error: 'Bruger-id mangler.' }, 400);
-  if (payload.userId === caller.id) {
-    return json({ error: 'Du kan ikke slette din egen bruger.' }, 400);
-  }
 
   const adminClient = createClient(supabaseUrl, serviceRoleKey);
   const { data: callerProfile } = await adminClient
@@ -63,13 +60,31 @@ Deno.serve(async (request) => {
 
   const { data: targetProfile } = await adminClient
     .from('profiles')
-    .select('email,full_name,role')
+    .select('email,full_name,role,is_active')
     .eq('id', payload.userId)
     .single();
 
   if (!targetProfile) return json({ error: 'Brugeren blev ikke fundet.' }, 404);
   if (targetProfile.role === 'system_admin' && callerProfile.role !== 'system_admin') {
     return json({ error: 'Kun en systemadministrator kan slette en systemadministrator.' }, 403);
+  }
+  if (targetProfile.role === 'system_admin' && targetProfile.is_active) {
+    const { count, error: countError } = await adminClient
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'system_admin')
+      .eq('is_active', true);
+
+    if (countError) return json({ error: countError.message }, 500);
+    if ((count ?? 0) <= 1) {
+      return json(
+        {
+          error:
+            'Den sidste aktive systemadministrator kan ikke slettes. Opret eller aktivér en afløser først.',
+        },
+        400,
+      );
+    }
   }
 
   await adminClient.from('activity_log').insert({

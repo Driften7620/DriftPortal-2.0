@@ -24,7 +24,7 @@ import type {
 } from './types';
 
 export function useAdministration() {
-  const { isDemoMode, user: currentUser } = useAuth();
+  const { isDemoMode, signOut, user: currentUser } = useAuth();
   const [users, setUsers] = useState<ManagedUser[]>(() => loadAdminUsers() ?? adminUserSeed);
   const [locations, setLocations] = useState<SystemLocation[]>(
     () => loadLocations() ?? locationSeed,
@@ -90,7 +90,27 @@ export function useAdministration() {
     [categories, locations, settings.syncStatus, users],
   );
 
+  function isLastActiveSystemAdmin(user: ManagedUser) {
+    return (
+      user.role === 'system_admin' &&
+      user.isActive &&
+      users.filter((item) => item.role === 'system_admin' && item.isActive).length <= 1
+    );
+  }
+
   function saveUser(draft: UserDraft) {
+    const existingUser = draft.id ? users.find((user) => user.id === draft.id) : undefined;
+    if (
+      existingUser &&
+      isLastActiveSystemAdmin(existingUser) &&
+      (draft.role !== 'system_admin' || !draft.isActive)
+    ) {
+      setSyncMessage(
+        'Opret eller aktivér en anden systemadministrator, før denne rolle kan ændres.',
+      );
+      return false;
+    }
+
     const now = new Date().toISOString();
     const id = draft.id ?? `local-user-${Date.now()}`;
     const user: ManagedUser = {
@@ -111,9 +131,19 @@ export function useAdministration() {
         ? 'Brugerens ændringer er gemt offline.'
         : 'Brugeren er oprettet lokalt. Rigtig login-invitation kræver Supabase.',
     );
+    return true;
   }
 
   function toggleUserActive(id: string) {
+    const target = users.find((user) => user.id === id);
+    if (!target) return;
+    if (target.isActive && isLastActiveSystemAdmin(target)) {
+      setSyncMessage(
+        'Opret eller aktivér en anden systemadministrator, før denne bruger kan deaktiveres.',
+      );
+      return;
+    }
+
     setUsers((current) =>
       current.map((user) =>
         user.id === id
@@ -132,13 +162,16 @@ export function useAdministration() {
   async function deleteUser(id: string) {
     const target = users.find((user) => user.id === id);
     if (!target) return false;
-    if (currentUser?.id === id) {
-      setSyncMessage('Du kan ikke slette den bruger, du selv er logget ind som.');
+    if (isLastActiveSystemAdmin(target)) {
+      setSyncMessage(
+        'Den sidste aktive systemadministrator kan ikke slettes. Opret eller aktivér en afløser først.',
+      );
       return false;
     }
     if (id.startsWith('local-user-') || id.startsWith('demo-')) {
       setUsers((current) => current.filter((user) => user.id !== id));
       setSyncMessage('Den lokale bruger er slettet fra denne enhed.');
+      if (currentUser?.id === id) await signOut();
       return true;
     }
     if (isDemoMode || !supabase) {
@@ -166,6 +199,7 @@ export function useAdministration() {
 
     setUsers((current) => current.filter((user) => user.id !== id));
     setSyncMessage(`${target.fullName} er slettet fra DriftPortal og Supabase-login.`);
+    if (currentUser?.id === id) await signOut();
     return true;
   }
 

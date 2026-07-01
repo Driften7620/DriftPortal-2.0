@@ -63,6 +63,9 @@ Deno.serve(async (request) => {
   if (!payload.email || !payload.fullName || !payload.role) {
     return json({ error: 'Email, navn og rolle er påkrævet.' }, 400);
   }
+  if (payload.role === 'system_admin' && callerProfile.role !== 'system_admin') {
+    return json({ error: 'Kun en systemadministrator kan oprette en systemadministrator.' }, 403);
+  }
 
   const { data, error } = await adminClient.auth.admin.inviteUserByEmail(payload.email, {
     data: { full_name: payload.fullName },

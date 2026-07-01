@@ -36,7 +36,7 @@ import type { ManagedUser, UserDraft } from './types';
 interface UserManagementProps {
   users: ManagedUser[];
   currentUserId?: string;
-  onSave: (draft: UserDraft) => void;
+  onSave: (draft: UserDraft) => boolean;
   onToggleActive: (id: string) => void;
   onDelete: (id: string) => Promise<boolean>;
 }
@@ -69,6 +69,13 @@ export function UserManagement({
       }),
     [role, search, users],
   );
+  const activeSystemAdminCount = users.filter(
+    (user) => user.role === 'system_admin' && user.isActive,
+  ).length;
+
+  function isLastActiveSystemAdmin(user: ManagedUser) {
+    return user.role === 'system_admin' && user.isActive && activeSystemAdminCount <= 1;
+  }
 
   function openNew() {
     setDraft(emptyUserDraft());
@@ -91,8 +98,7 @@ export function UserManagement({
 
   function submit() {
     if (!draft.fullName.trim() || !draft.email.trim()) return;
-    onSave(draft);
-    setDialogOpen(false);
+    if (onSave(draft)) setDialogOpen(false);
   }
 
   async function confirmDelete() {
@@ -172,15 +178,15 @@ export function UserManagement({
                 </Tooltip>
                 <Tooltip
                   title={
-                    user.id === currentUserId
-                      ? 'Du kan ikke slette din egen bruger'
+                    isLastActiveSystemAdmin(user)
+                      ? 'Opret en anden systemadministrator før denne bruger slettes'
                       : 'Slet bruger'
                   }
                 >
                   <span>
                     <IconButton
                       color="error"
-                      disabled={user.id === currentUserId}
+                      disabled={isLastActiveSystemAdmin(user)}
                       aria-label={`Slet ${user.fullName}`}
                       onClick={() => setDeleteCandidate(user)}
                     >
@@ -202,17 +208,26 @@ export function UserManagement({
                 {user.syncStatus !== 'synced' && (
                   <Chip size="small" color="warning" label="Afventer synk" />
                 )}
-                <FormControlLabel
-                  sx={{ ml: { sm: 'auto' } }}
-                  control={
-                    <Switch
-                      checked={user.isActive}
-                      onChange={() => onToggleActive(user.id)}
-                      inputProps={{ 'aria-label': `Aktiv bruger ${user.fullName}` }}
-                    />
+                <Tooltip
+                  title={
+                    isLastActiveSystemAdmin(user)
+                      ? 'Den sidste aktive systemadministrator kan ikke deaktiveres'
+                      : ''
                   }
-                  label={user.isActive ? 'Aktiv' : 'Deaktiveret'}
-                />
+                >
+                  <FormControlLabel
+                    sx={{ ml: { sm: 'auto' } }}
+                    control={
+                      <Switch
+                        checked={user.isActive}
+                        disabled={isLastActiveSystemAdmin(user)}
+                        onChange={() => onToggleActive(user.id)}
+                        inputProps={{ 'aria-label': `Aktiv bruger ${user.fullName}` }}
+                      />
+                    }
+                    label={user.isActive ? 'Aktiv' : 'Deaktiveret'}
+                  />
+                </Tooltip>
               </Stack>
             </Card>
           </Grid>
@@ -348,6 +363,9 @@ export function UserManagement({
           <Typography>
             {deleteCandidate?.fullName} fjernes permanent fra både DriftPortal og Supabase-login.
             Handlingen kan ikke fortrydes.
+            {deleteCandidate?.id === currentUserId
+              ? ' Du bliver logget ud, når din egen konto er slettet.'
+              : ''}
           </Typography>
         </DialogContent>
         <DialogActions>
