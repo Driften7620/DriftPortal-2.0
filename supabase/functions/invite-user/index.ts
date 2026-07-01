@@ -67,7 +67,42 @@ Deno.serve(async (request) => {
     return json({ error: 'Kun en systemadministrator kan oprette en systemadministrator.' }, 403);
   }
 
-  const { data, error } = await adminClient.auth.admin.inviteUserByEmail(payload.email, {
+  const normalizedEmail = payload.email.trim().toLowerCase();
+  const { data: existingProfile, error: existingProfileError } = await adminClient
+    .from('profiles')
+    .select('id,email')
+    .ilike('email', normalizedEmail)
+    .maybeSingle();
+
+  if (existingProfileError) {
+    return json({ error: existingProfileError.message }, 500);
+  }
+
+  if (existingProfile) {
+    const { error: updateError } = await adminClient
+      .from('profiles')
+      .update({
+        full_name: payload.fullName,
+        role: payload.role,
+        module_access: payload.moduleAccess ?? [],
+        is_active: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', existingProfile.id);
+
+    if (updateError) return json({ error: updateError.message }, 500);
+    return json(
+      {
+        id: existingProfile.id,
+        email: existingProfile.email,
+        invited: false,
+        existing: true,
+      },
+      200,
+    );
+  }
+
+  const { data, error } = await adminClient.auth.admin.inviteUserByEmail(normalizedEmail, {
     data: { full_name: payload.fullName },
     redirectTo: payload.redirectTo,
   });

@@ -117,6 +117,16 @@ Alle nuvaerende funktioner fra den gamle `index.html` skal bevares eller bevidst
 - Trinvis opsætningsguide i `docs/supabase-setup.md`.
 - Rigtig login opdaterer sessionen direkte uden forkert redirect fra GitHub Pages.
 
+## Sprint 7.3 leverance
+
+- Administration henter brugere, lokationer, kategorier og globale indstillinger fra Supabase.
+- Lokale, afventende ændringer bevares, når nyere serverdata indlæses.
+- Synkronisering kan ikke startes flere gange samtidig og viser tydelig arbejdsstatus.
+- Et nyt tryk på Synk henter ændringer fra andre enheder, når den lokale kø er tom.
+- Brugerinvitationer kan gentages sikkert, hvis brugeren allerede blev oprettet ved et tidligere forsøg.
+- Synkronisering registreres i aktivitetsloggen med antal ændrede poster.
+- Seneste kontakt med Supabase vises i administrationsmodulet.
+
 ## Nye moduler fra brief
 
 - Køretøjer: service, syn, dæk, brændstof og kilometer.

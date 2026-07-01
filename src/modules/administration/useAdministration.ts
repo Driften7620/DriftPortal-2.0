@@ -15,6 +15,7 @@ import {
 } from './adminStorage';
 import { adminUserSeed, categorySeed, locationSeed, settingsSeed } from './mockData';
 import type {
+  AdminSyncStatus,
   CategoryDraft,
   LocationDraft,
   ManagedUser,
@@ -37,6 +38,10 @@ export function useAdministration() {
     () => loadPortalSettings() ?? settingsSeed,
   );
   const [syncMessage, setSyncMessage] = useState('');
+  const [isLoadingRemote, setIsLoadingRemote] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const [reloadVersion, setReloadVersion] = useState(0);
 
   useEffect(() => saveAdminUsers(users), [users]);
   useEffect(() => saveLocations(locations), [locations]);
@@ -48,39 +53,100 @@ export function useAdministration() {
 
     let isMounted = true;
 
-    async function loadRemoteUsers() {
-      const { data, error } = await supabase!
-        .from('profiles')
-        .select('id,email,full_name,role,module_access,is_active,updated_at')
-        .order('full_name');
+    async function loadRemoteAdministration() {
+      setIsLoadingRemote(true);
+      const [userResult, locationResult, categoryResult, settingsResult] = await Promise.all([
+        supabase!
+          .from('profiles')
+          .select('id,email,full_name,role,module_access,is_active,updated_at')
+          .order('full_name'),
+        supabase!
+          .from('system_locations')
+          .select('id,name,code,address,is_active,updated_at')
+          .order('name'),
+        supabase!
+          .from('system_categories')
+          .select('id,name,area,color,is_active,updated_at')
+          .order('name'),
+        supabase!.from('portal_settings').select('*').eq('id', 'global').maybeSingle(),
+      ]);
 
       if (!isMounted) return;
-      if (error) {
-        setSyncMessage(`Brugerne kunne ikke hentes fra Supabase: ${error.message}`);
+      const loadError =
+        userResult.error ?? locationResult.error ?? categoryResult.error ?? settingsResult.error;
+
+      if (loadError) {
+        setSyncMessage(`Systemopsætningen kunne ikke hentes fra Supabase: ${loadError.message}`);
+        setIsLoadingRemote(false);
         return;
       }
 
-      setUsers(
-        (data ?? []).map((profile) => ({
-          id: profile.id,
-          fullName: profile.full_name,
-          email: profile.email ?? '',
-          phone: '',
-          jobTitle: 'Medarbejder',
-          role: profile.role as ManagedUser['role'],
-          moduleAccess: profile.module_access ?? [],
-          isActive: profile.is_active ?? true,
-          updatedAt: profile.updated_at,
-          syncStatus: 'synced',
-        })),
-      );
+      const remoteUsers: ManagedUser[] = (userResult.data ?? []).map((profile) => ({
+        id: profile.id,
+        fullName: profile.full_name,
+        email: profile.email ?? '',
+        phone: '',
+        jobTitle: 'Medarbejder',
+        role: profile.role as ManagedUser['role'],
+        moduleAccess: profile.module_access ?? [],
+        isActive: profile.is_active ?? true,
+        updatedAt: profile.updated_at,
+        syncStatus: 'synced',
+      }));
+      const remoteLocations: SystemLocation[] = (locationResult.data ?? []).map((location) => ({
+        id: location.id,
+        name: location.name,
+        code: location.code,
+        address: location.address,
+        isActive: location.is_active,
+        updatedAt: location.updated_at,
+        syncStatus: 'synced',
+      }));
+      const remoteCategories: SystemCategory[] = (categoryResult.data ?? []).map((category) => ({
+        id: category.id,
+        name: category.name,
+        area: category.area,
+        color: category.color,
+        isActive: category.is_active,
+        updatedAt: category.updated_at,
+        syncStatus: 'synced',
+      }));
+
+      setUsers((current) => mergeRemoteWithPending(current, remoteUsers));
+      setLocations((current) => mergeRemoteWithPending(current, remoteLocations));
+      setCategories((current) => mergeRemoteWithPending(current, remoteCategories));
+
+      if (settingsResult.data) {
+        const remoteSettings = settingsResult.data;
+        setSettings((current) =>
+          current.syncStatus !== 'synced'
+            ? current
+            : {
+                organizationName: remoteSettings.organization_name,
+                emergencyPhone: remoteSettings.emergency_phone,
+                defaultLocationId: remoteSettings.default_location_id ?? '',
+                syncIntervalMinutes: remoteSettings.sync_interval_minutes,
+                automaticSync: remoteSettings.automatic_sync,
+                pushNotifications: remoteSettings.push_notifications,
+                offlineMode: remoteSettings.offline_mode,
+                updatedAt: remoteSettings.updated_at,
+                syncStatus: 'synced',
+              },
+        );
+      }
+
+      setLastSyncedAt(new Date().toISOString());
+      setIsLoadingRemote(false);
+      if (reloadVersion > 0) {
+        setSyncMessage('Systemopsætningen er opdateret fra Supabase.');
+      }
     }
 
-    void loadRemoteUsers();
+    void loadRemoteAdministration();
     return () => {
       isMounted = false;
     };
-  }, [currentUser?.id, isDemoMode]);
+  }, [currentUser?.id, isDemoMode, reloadVersion]);
 
   const pendingCount = useMemo(
     () =>
@@ -348,8 +414,14 @@ export function useAdministration() {
   }
 
   async function syncPending() {
+    if (isSyncing) return;
     if (!pendingCount) {
-      setSyncMessage('Systemopsætningen er synkroniseret.');
+      if (!isDemoMode && supabase) {
+        setSyncMessage('Henter den nyeste systemopsætning fra Supabase...');
+        setReloadVersion((current) => current + 1);
+      } else {
+        setSyncMessage('Systemopsætningen er synkroniseret.');
+      }
       return;
     }
     if (isDemoMode || !supabase) {
@@ -357,108 +429,141 @@ export function useAdministration() {
       return;
     }
 
-    const existingUsers = users.filter(
-      (user) => user.syncStatus !== 'synced' && !user.id.startsWith('local-user-'),
-    );
-    for (const user of existingUsers) {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: user.fullName,
-          role: user.role,
-          module_access: user.moduleAccess,
-          is_active: user.isActive,
-          updated_at: user.updatedAt,
-        })
-        .eq('id', user.id);
-      if (error) return markFailed(error.message);
-    }
+    setIsSyncing(true);
+    try {
+      const existingUsers = users.filter(
+        (user) => user.syncStatus !== 'synced' && !user.id.startsWith('local-user-'),
+      );
+      for (const user of existingUsers) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            full_name: user.fullName,
+            role: user.role,
+            module_access: user.moduleAccess,
+            is_active: user.isActive,
+            updated_at: user.updatedAt,
+          })
+          .eq('id', user.id);
+        if (error) return markFailed(error.message);
+      }
 
-    const localUsers = users.filter(
-      (user) => user.syncStatus !== 'synced' && user.id.startsWith('local-user-'),
-    );
-    const invitedUsers = new Map<string, string>();
-    for (const user of localUsers) {
-      const { data, error } = await supabase.functions.invoke('invite-user', {
-        body: {
-          email: user.email,
-          fullName: user.fullName,
-          role: user.role,
-          moduleAccess: user.moduleAccess,
-          redirectTo: getPasswordUpdateRedirectUrl(),
-        },
-      });
-      if (error) return markFailed(error.message);
-      const invitedId = (data as { id?: string } | null)?.id;
-      if (!invitedId) return markFailed(`Invitationen til ${user.email} returnerede intet bruger-id.`);
-      invitedUsers.set(user.id, invitedId);
-    }
+      const localUsers = users.filter(
+        (user) => user.syncStatus !== 'synced' && user.id.startsWith('local-user-'),
+      );
+      const invitedUsers = new Map<string, string>();
+      for (const user of localUsers) {
+        const { data, error } = await supabase.functions.invoke('invite-user', {
+          body: {
+            email: user.email,
+            fullName: user.fullName,
+            role: user.role,
+            moduleAccess: user.moduleAccess,
+            redirectTo: getPasswordUpdateRedirectUrl(),
+          },
+        });
+        if (error) {
+          const message = await readFunctionError(
+            error,
+            `Invitationen til ${user.email} kunne ikke gennemføres.`,
+          );
+          setUsers((current) =>
+            current.map((item) =>
+              item.id === user.id ? { ...item, syncStatus: 'failed', syncError: message } : item,
+            ),
+          );
+          setSyncMessage(`Synkronisering af ${user.email} fejlede: ${message}`);
+          return;
+        }
+        const invitedId = (data as { id?: string } | null)?.id;
+        if (!invitedId) {
+          const message = `Invitationen til ${user.email} returnerede intet bruger-id.`;
+          setUsers((current) =>
+            current.map((item) =>
+              item.id === user.id ? { ...item, syncStatus: 'failed', syncError: message } : item,
+            ),
+          );
+          setSyncMessage(message);
+          return;
+        }
+        invitedUsers.set(user.id, invitedId);
+      }
 
-    const pendingLocations = locations.filter((item) => item.syncStatus !== 'synced');
-    if (pendingLocations.length) {
-      const locationResult = await supabase.from('system_locations').upsert(
-        pendingLocations.map((item) => ({
-          id: item.id,
-          name: item.name,
-          code: item.code,
-          address: item.address,
-          is_active: item.isActive,
-          updated_at: item.updatedAt,
+      const pendingLocations = locations.filter((item) => item.syncStatus !== 'synced');
+      if (pendingLocations.length) {
+        const locationResult = await supabase.from('system_locations').upsert(
+          pendingLocations.map((item) => ({
+            id: item.id,
+            name: item.name,
+            code: item.code,
+            address: item.address,
+            is_active: item.isActive,
+            updated_at: item.updatedAt,
+          })),
+        );
+        if (locationResult.error) return markFailed(locationResult.error.message);
+      }
+
+      const pendingCategories = categories.filter((item) => item.syncStatus !== 'synced');
+      if (pendingCategories.length) {
+        const categoryResult = await supabase.from('system_categories').upsert(
+          pendingCategories.map((item) => ({
+            id: item.id,
+            name: item.name,
+            area: item.area,
+            color: item.color,
+            is_active: item.isActive,
+            updated_at: item.updatedAt,
+          })),
+        );
+        if (categoryResult.error) return markFailed(categoryResult.error.message);
+      }
+
+      if (settings.syncStatus !== 'synced') {
+        const settingsResult = await supabase.from('portal_settings').upsert({
+          id: 'global',
+          organization_name: settings.organizationName,
+          emergency_phone: settings.emergencyPhone,
+          default_location_id: settings.defaultLocationId || null,
+          sync_interval_minutes: settings.syncIntervalMinutes,
+          automatic_sync: settings.automaticSync,
+          push_notifications: settings.pushNotifications,
+          offline_mode: settings.offlineMode,
+          updated_at: settings.updatedAt,
+        });
+        if (settingsResult.error) return markFailed(settingsResult.error.message);
+      }
+
+      setUsers((current) =>
+        current.map((item) => ({
+          ...item,
+          id: invitedUsers.get(item.id) ?? item.id,
+          syncStatus: 'synced',
+          syncError: undefined,
         })),
       );
-      if (locationResult.error) return markFailed(locationResult.error.message);
-    }
-
-    const pendingCategories = categories.filter((item) => item.syncStatus !== 'synced');
-    if (pendingCategories.length) {
-      const categoryResult = await supabase.from('system_categories').upsert(
-        pendingCategories.map((item) => ({
-          id: item.id,
-          name: item.name,
-          area: item.area,
-          color: item.color,
-          is_active: item.isActive,
-          updated_at: item.updatedAt,
-        })),
+      setLocations((current) =>
+        current.map((item) => ({ ...item, syncStatus: 'synced', syncError: undefined })),
       );
-      if (categoryResult.error) return markFailed(categoryResult.error.message);
-    }
-
-    if (settings.syncStatus !== 'synced') {
-      const settingsResult = await supabase.from('portal_settings').upsert({
-        id: 'global',
-        organization_name: settings.organizationName,
-        emergency_phone: settings.emergencyPhone,
-        default_location_id: settings.defaultLocationId,
-        sync_interval_minutes: settings.syncIntervalMinutes,
-        automatic_sync: settings.automaticSync,
-        push_notifications: settings.pushNotifications,
-        offline_mode: settings.offlineMode,
-        updated_at: settings.updatedAt,
+      setCategories((current) =>
+        current.map((item) => ({ ...item, syncStatus: 'synced', syncError: undefined })),
+      );
+      setSettings((current) => ({ ...current, syncStatus: 'synced', syncError: undefined }));
+      await writeSyncActivity(currentUser?.id, {
+        users: existingUsers.length + localUsers.length,
+        locations: pendingLocations.length,
+        categories: pendingCategories.length,
+        settings: settings.syncStatus !== 'synced',
       });
-      if (settingsResult.error) return markFailed(settingsResult.error.message);
+      setLastSyncedAt(new Date().toISOString());
+      setSyncMessage(
+        localUsers.length
+          ? `${localUsers.length} brugerinvitation(er) er sendt, og opsætningen er synkroniseret.`
+          : 'Systemopsætningen er synkroniseret.',
+      );
+    } finally {
+      setIsSyncing(false);
     }
-
-    setUsers((current) =>
-      current.map((item) => ({
-        ...item,
-        id: invitedUsers.get(item.id) ?? item.id,
-        syncStatus: 'synced',
-        syncError: undefined,
-      })),
-    );
-    setLocations((current) =>
-      current.map((item) => ({ ...item, syncStatus: 'synced', syncError: undefined })),
-    );
-    setCategories((current) =>
-      current.map((item) => ({ ...item, syncStatus: 'synced', syncError: undefined })),
-    );
-    setSettings((current) => ({ ...current, syncStatus: 'synced', syncError: undefined }));
-    setSyncMessage(
-      localUsers.length
-        ? `${localUsers.length} brugerinvitation(er) er sendt, og opsætningen er synkroniseret.`
-        : 'Systemopsætningen er synkroniseret.',
-    );
   }
 
   function markFailed(message: string) {
@@ -492,6 +597,9 @@ export function useAdministration() {
     settings,
     pendingCount,
     syncMessage,
+    isLoadingRemote,
+    isSyncing,
+    lastSyncedAt,
     currentUserId: currentUser?.id,
     saveUser,
     toggleUserActive,
@@ -506,4 +614,54 @@ export function useAdministration() {
     updateSettings,
     syncPending,
   };
+}
+
+async function readFunctionError(error: unknown, fallback: string) {
+  const functionError = error as { message?: string; context?: Response };
+  const response = functionError.context;
+
+  if (response) {
+    try {
+      const body = (await response.clone().json()) as { error?: string; message?: string };
+      if (body.error || body.message) return body.error ?? body.message ?? fallback;
+    } catch {
+      try {
+        const body = await response.clone().text();
+        if (body.trim()) return body.trim();
+      } catch {
+        // Use the SDK message below when the response body cannot be read.
+      }
+    }
+  }
+
+  return functionError.message || fallback;
+}
+
+function mergeRemoteWithPending<T extends { id: string; syncStatus: AdminSyncStatus }>(
+  current: T[],
+  remote: T[],
+) {
+  const pending = current.filter((item) => item.syncStatus !== 'synced');
+  const pendingIds = new Set(pending.map((item) => item.id));
+  return [...pending, ...remote.filter((item) => !pendingIds.has(item.id))];
+}
+
+async function writeSyncActivity(
+  userId: string | undefined,
+  details: {
+    users: number;
+    locations: number;
+    categories: number;
+    settings: boolean;
+  },
+) {
+  if (!supabase || !userId) return;
+  await supabase.from('activity_log').insert({
+    user_id: userId,
+    module_id: 'administration',
+    action: 'sync_system_setup',
+    entity_type: 'portal_settings',
+    entity_id: 'global',
+    details,
+  });
 }

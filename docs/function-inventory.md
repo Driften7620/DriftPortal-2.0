@@ -27,10 +27,10 @@ Statusforklaring:
 | LiveConnect | Reference fundet | Eksternt driftsdashboard med fallback |
 | Udstyr | Reference fundet | Udlån, reservation, returnering, billeder, godkendelsesstatus |
 | El-eftersyn | Reference fundet | Eftersyn, fund, frister, CSV og alarmer |
-| Administration | Sprint 7 færdig som grundlag | Brugere, roller, moduladgang, lokationer, kategorier, offline-gem og systemindstillinger |
+| Administration | Sprint 7.3 med Supabase-drift | Brugere, roller, moduladgang, lokationer, kategorier, offline-gem og systemindstillinger |
 | Global søgning | Skal bygges | Søg på tværs af målere, udstyr, SDS, jobs og manualer |
 | Push-notifikationer | Skal bygges | Opgaver, alarmer, godkendelser og reminders |
-| Synkronisering | Sprint 7.1 backendgrundlag | Lokal-først data, Supabase-klient, forbindelsestest, GitHub Secrets og serverfunktioner |
+| Synkronisering | Sprint 7.3 administrationssynk | Lokal-først data, Supabase-klient, forbindelsestest, GitHub Secrets og serverfunktioner |
 | Køretøjer | Skal bygges | Service, syn, dæk, brændstof og kilometer |
 | Anlæg | Skal bygges | Pumper, motorer, ventiler, vekslere, kedler, billeder og historik |
 | Vedligeholdelsesplan | Skal bygges | Gentagne serviceopgaver og intervaller |

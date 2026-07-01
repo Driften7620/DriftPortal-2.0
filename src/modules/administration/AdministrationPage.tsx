@@ -59,11 +59,26 @@ export function AdministrationPage() {
         <Button
           variant={admin.pendingCount ? 'contained' : 'outlined'}
           startIcon={admin.pendingCount ? <CloudOffIcon /> : <CloudDoneIcon />}
+          disabled={admin.isLoadingRemote || admin.isSyncing}
           onClick={() => void admin.syncPending()}
         >
-          {admin.pendingCount ? `Synk ${admin.pendingCount}` : 'Synkroniseret'}
+          {admin.isSyncing
+            ? 'Synkroniserer...'
+            : admin.isLoadingRemote
+              ? 'Henter opsætning...'
+              : admin.pendingCount
+                ? `Synk ${admin.pendingCount}`
+                : 'Synkroniseret'}
         </Button>
       </Stack>
+
+      {(admin.isLoadingRemote || admin.isSyncing) && <LinearProgress />}
+
+      {admin.lastSyncedAt && !admin.isLoadingRemote && (
+        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+          Seneste kontakt med Supabase: {formatSyncTime(admin.lastSyncedAt)}
+        </Typography>
+      )}
 
       {admin.syncMessage && (
         <Alert severity={admin.pendingCount ? 'warning' : 'success'} icon={<SyncIcon />}>
@@ -131,6 +146,15 @@ export function AdministrationPage() {
       </Card>
     </Stack>
   );
+}
+
+function formatSyncTime(value: string) {
+  return new Intl.DateTimeFormat('da-DK', {
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+  }).format(new Date(value));
 }
 
 function AdminOverview({
