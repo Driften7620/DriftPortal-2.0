@@ -12,6 +12,7 @@ export default [
       'node_modules',
       'outputs',
       'work',
+      'upload-*',
       '.pnpm-store',
       'supabase/functions',
     ],
@@ -19,7 +20,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['public/sw.js'],
+    files: ['public/sw.js', 'sw.js'],
     languageOptions: {
       globals: globals.serviceworker,
     },
