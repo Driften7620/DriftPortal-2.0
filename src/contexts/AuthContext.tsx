@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { PropsWithChildren } from 'react';
 
 import { demoUser } from '../features/auth/roleAccess';
+import { isPasswordUpdateRedirect } from '../services/authRedirect';
 import { supabase } from '../services/supabaseClient';
 import { supabaseConfiguration } from '../services/supabaseConfig';
 import type { AuthState, SignInInput, UserProfile } from '../types/auth';
@@ -27,8 +28,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
     let isMounted = true;
 
     async function loadSession() {
+      const passwordUpdateRedirect = isPasswordUpdateRedirect();
       const demoSession = localStorage.getItem(demoStorageKey);
-      if (demoSession === '1') {
+
+      if (passwordUpdateRedirect) {
+        localStorage.removeItem(demoStorageKey);
+      } else if (demoSession === '1') {
         if (isMounted) setState({ user: demoUser, isLoading: false, isDemoMode: true });
         return;
       }

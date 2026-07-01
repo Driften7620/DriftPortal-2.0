@@ -3,6 +3,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import HomeIcon from '@mui/icons-material/Home';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PasswordIcon from '@mui/icons-material/Password';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import SearchIcon from '@mui/icons-material/Search';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -157,6 +158,19 @@ export function AppShell({ colorMode }: AppShellProps) {
                     {user?.fullName ?? 'Bruger'}
                     {isDemoMode ? ' · demo' : ''}
                   </MenuItem>
+                  {!isDemoMode && (
+                    <MenuItem
+                      onClick={() => {
+                        setProfileAnchor(null);
+                        navigate('/account/password');
+                      }}
+                    >
+                      <ListItemIcon>
+                        <PasswordIcon fontSize="small" />
+                      </ListItemIcon>
+                      Skift adgangskode
+                    </MenuItem>
+                  )}
                   <MenuItem
                     onClick={() => {
                       setProfileAnchor(null);
@@ -174,9 +188,45 @@ export function AppShell({ colorMode }: AppShellProps) {
               <Chip
                 icon={<AccountCircleIcon />}
                 label={`${user?.fullName ?? 'Bruger'}${isDemoMode ? ' · demo' : ''}`}
-                onDelete={signOut}
-                sx={{ fontWeight: 700 }}
+                onClick={(event) => setProfileAnchor(event.currentTarget)}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
               />
+            )}
+            {!compact && (
+              <Menu
+                anchorEl={profileAnchor}
+                open={Boolean(profileAnchor)}
+                onClose={() => setProfileAnchor(null)}
+              >
+                <MenuItem disabled>
+                  {user?.fullName ?? 'Bruger'}
+                  {isDemoMode ? ' · demo' : ''}
+                </MenuItem>
+                {!isDemoMode && (
+                  <MenuItem
+                    onClick={() => {
+                      setProfileAnchor(null);
+                      navigate('/account/password');
+                    }}
+                  >
+                    <ListItemIcon>
+                      <PasswordIcon fontSize="small" />
+                    </ListItemIcon>
+                    Skift adgangskode
+                  </MenuItem>
+                )}
+                <MenuItem
+                  onClick={() => {
+                    setProfileAnchor(null);
+                    void signOut();
+                  }}
+                >
+                  <ListItemIcon>
+                    <LogoutIcon fontSize="small" />
+                  </ListItemIcon>
+                  Log ud
+                </MenuItem>
+              </Menu>
             )}
           </Stack>
         </Toolbar>

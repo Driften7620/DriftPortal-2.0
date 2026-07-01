@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAuth } from '../../contexts/AuthContext';
+import { getPasswordUpdateRedirectUrl } from '../../services/authRedirect';
 import { supabase } from '../../services/supabaseClient';
 import {
   loadAdminUsers,
@@ -384,7 +385,7 @@ export function useAdministration() {
           fullName: user.fullName,
           role: user.role,
           moduleAccess: user.moduleAccess,
-          redirectTo: new URL(import.meta.env.BASE_URL, window.location.origin).toString(),
+          redirectTo: getPasswordUpdateRedirectUrl(),
         },
       });
       if (error) return markFailed(error.message);

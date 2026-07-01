@@ -64,6 +64,7 @@ export function LoginPage() {
           <Button variant="contained" size="large" type="submit" disabled={isSubmitting}>
             Log ind
           </Button>
+          <Button onClick={() => navigate('/forgot-password')}>Glemt adgangskode?</Button>
           <Button variant="outlined" size="large" onClick={handleDemoLogin}>
             Fortsæt som demo-admin
           </Button>

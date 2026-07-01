@@ -1,4 +1,4 @@
-const CACHE = 'driftportal-2-sprint7-1-backend';
+const CACHE = 'driftportal-2-password-flow-20260701';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {
@@ -23,6 +23,26 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('energidataservice.dk');
 
   if (isExternalData) return;
+
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put('./index.html', copy));
+          }
+          return response;
+        })
+        .catch(
+          () =>
+            caches.match('./index.html').then(
+              (cached) => cached || new Response('Offline', { status: 503 }),
+            ),
+        ),
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
